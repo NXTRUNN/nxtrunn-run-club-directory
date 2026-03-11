@@ -1,0 +1,455 @@
+/* NXTRUNN Run Club Directory Styles */
+
+/* Directory Wrapper */
+.nxtrunn-directory-wrapper {
+    display: flex;
+    gap: 40px;
+    margin: 40px 0;
+    max-width: 1400px;
+}
+
+/* Filters Sidebar - Wider for better readability */
+.nxtrunn-filters {
+    flex: 0 0 320px;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    height: fit-content;
+    position: sticky;
+    top: 20px;
+}
+
+.nxtrunn-filter-group {
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.nxtrunn-filter-group:last-child {
+    border-bottom: none;
+}
+
+.nxtrunn-filter-group h4 {
+    margin: 0 0 18px 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #8f657c;
+}
+
+.nxtrunn-filter-group label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.nxtrunn-filter-group label:hover {
+    color: #8f657c;
+}
+
+.nxtrunn-filter-group input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.nxtrunn-filter-group input[type="text"],
+.nxtrunn-filter-group select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.nxtrunn-filter-group input[type="text"]:focus,
+.nxtrunn-filter-group select:focus {
+    outline: none;
+    border-color: #8f657c;
+}
+
+/* Near Me Button */
+.nxtrunn-near-me-btn {
+    width: 100%;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #8f657c 0%, #a9899b 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(143, 101, 124, 0.3);
+}
+
+.nxtrunn-near-me-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(143, 101, 124, 0.4);
+}
+
+.nxtrunn-near-me-btn:active {
+    transform: translateY(0);
+}
+
+/* Filter Actions */
+.nxtrunn-filter-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.nxtrunn-apply-filters,
+.nxtrunn-clear-filters {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nxtrunn-apply-filters {
+    background: #8f657c;
+    color: white;
+}
+
+.nxtrunn-apply-filters:hover {
+    background: #7a5669;
+}
+
+.nxtrunn-clear-filters {
+    background: #f0f0f1;
+    color: #333;
+}
+
+.nxtrunn-clear-filters:hover {
+    background: #ddd;
+}
+
+/* Directory Content */
+.nxtrunn-directory-content {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Directory Header */
+.nxtrunn-directory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.nxtrunn-results-count {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+
+.nxtrunn-sort {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nxtrunn-sort label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+}
+
+.nxtrunn-sort select {
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Directory List - Vertical Scrolling Cards */
+.nxtrunn-directory-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+    margin-bottom: 40px;
+}
+
+/* Spacious Club Card */
+.nxtrunn-club-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: row;
+    min-height: 180px;
+}
+
+.nxtrunn-club-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+/* Logo - Left Side */
+.nxtrunn-club-thumbnail {
+    width: 200px;
+    min-width: 200px;
+    height: auto;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nxtrunn-club-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+/* Placeholder for missing logos */
+.nxtrunn-club-thumbnail:empty::after {
+    content: '🏃‍♀️';
+    font-size: 48px;
+    opacity: 0.3;
+}
+
+/* Content Area - More spacious */
+.nxtrunn-club-content {
+    padding: 24px 28px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Badges at Top */
+.nxtrunn-club-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Title */
+.nxtrunn-club-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #333;
+}
+
+.nxtrunn-club-title a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.nxtrunn-club-title a:hover {
+    color: #8f657c;
+}
+
+/* Location */
+.nxtrunn-club-location {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    color: #666;
+}
+
+.nxtrunn-distance {
+    margin-left: auto;
+    padding: 4px 10px;
+    background: #f0f0f1;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8f657c;
+}
+
+/* Hide excerpt on cards */
+.nxtrunn-club-excerpt {
+    display: none;
+}
+
+/* Meta Info - Better spacing */
+.nxtrunn-club-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.nxtrunn-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: #f8f8f8;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+}
+
+/* Button at Bottom */
+.nxtrunn-club-link {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: 10px 20px;
+    background: #8f657c;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.nxtrunn-club-link:hover {
+    background: #7a5669;
+    transform: translateX(4px);
+}
+
+/* Pagination */
+.nxtrunn-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 50px;
+}
+
+.nxtrunn-pagination button {
+    padding: 12px 18px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.nxtrunn-pagination button:hover {
+    background: #8f657c;
+    color: white;
+    border-color: #8f657c;
+}
+
+.nxtrunn-pagination button.active {
+    background: #8f657c;
+    color: white;
+    border-color: #8f657c;
+}
+
+.nxtrunn-pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Loading Spinner */
+.nxtrunn-loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+.nxtrunn-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #8f657c;
+    border-radius: 50%;
+    animation: nxtrunn-spin 1s linear infinite;
+}
+
+@keyframes nxtrunn-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Mobile Filters - Collapsible */
+.nxtrunn-filter-toggle {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .nxtrunn-directory-wrapper {
+        gap: 30px;
+    }
+    
+    .nxtrunn-filters {
+        flex: 0 0 280px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .nxtrunn-directory-wrapper {
+        flex-direction: column;
+    }
+    
+    .nxtrunn-filters {
+        flex: 1;
+        position: relative;
+        top: 0;
+    }
+    
+    .nxtrunn-filter-toggle {
+        display: block;
+        width: 100%;
+        padding: 16px;
+        background: #8f657c;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-bottom: 15px;
+    }
+    
+    .nxtrunn-filter-content {
+        display: none;
+    }
+    
+    .nxtrunn-filter-content.active {
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .nxtrunn-club-card {
+        flex-direction: column;
+    }
+    
+    .nxtrunn-club-thumbnail {
+        width: 100%;
+        height: 180px;
+    }
+    
+    .nxtrunn-club-content {
+        padding: 20px;
+    }
+    
+    .nxtrunn-directory-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+}

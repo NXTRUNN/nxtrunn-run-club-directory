@@ -1,0 +1,1401 @@
+/* NXTRUNN Run Club Directory — Redesigned
+   Mobile-first, design-system driven
+   ======================================== */
+
+:root {
+    --color-primary:         #7C5A78;
+    --color-primary-light:   #A07E9C;
+    --color-primary-dark:    #5A3E57;
+    --color-primary-muted:   rgba(124, 90, 120, 0.10);
+    --color-bg:              #F7F4F9;
+    --color-surface:         #FFFFFF;
+    --color-surface-raised:  #F3EFF6;
+    --color-text-primary:    #1C1720;
+    --color-text-secondary:  #6D6070;
+    --color-text-disabled:   #B5A8BA;
+    --color-border:          #E2DAE8;
+    --color-border-focus:    #7C5A78;
+    --color-woman:           #D4617A;
+    --color-bipoc:           #8B6340;
+    --color-amber:           #C9903C;
+    --color-sage:            #5E9070;
+    --color-terra:           #C86848;
+    --color-slate:           #4E6FA8;
+
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body:    'DM Sans', sans-serif;
+
+    --radius-sm:   6px;
+    --radius-md:   12px;
+    --radius-lg:   20px;
+    --radius-full: 9999px;
+}
+
+/* ========================================
+   DIRECTORY CONTAINER
+   ======================================== */
+.nxtrunn-directory-wrapper-new {
+    max-width: 960px;
+    margin: 0 auto;
+    background: var(--color-surface);
+    min-height: 100vh;
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+}
+
+/* ========================================
+   STICKY HEADER — SEARCH + ADD
+   ======================================== */
+.nxtrunn-header-new {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: var(--color-surface);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.nxtrunn-search-add-container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.nxtrunn-search-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.nxtrunn-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-disabled);
+    pointer-events: none;
+}
+
+.nxtrunn-search-input-new {
+    width: 100%;
+    padding: 11px 14px 11px 42px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-size: 16px; /* prevent iOS zoom */
+    color: var(--color-text-primary);
+    background: var(--color-surface-raised);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    min-height: 44px;
+}
+
+.nxtrunn-search-input-new::placeholder {
+    color: var(--color-text-disabled);
+}
+
+.nxtrunn-search-input-new:focus {
+    outline: none;
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px var(--color-primary-muted);
+    background: var(--color-surface);
+}
+
+.nxtrunn-clear-search {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-text-disabled);
+    cursor: pointer;
+    padding: 4px;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nxtrunn-clear-search svg {
+    width: 16px;
+    height: 16px;
+}
+
+.nxtrunn-add-club-btn {
+    padding: 10px 20px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, box-shadow 0.2s;
+    letter-spacing: 0.2px;
+    min-height: 44px;
+}
+
+.nxtrunn-add-club-btn:hover {
+    background: var(--color-primary-dark);
+    box-shadow: 0 2px 8px rgba(124, 90, 120, 0.25);
+}
+
+.nxtrunn-add-club-btn:active {
+    transform: scale(0.97);
+}
+
+/* ========================================
+   FOCUS STATES — KEYBOARD ACCESSIBILITY
+   ======================================== */
+.nxtrunn-filter-pill:focus-visible,
+.nxtrunn-add-club-btn:focus-visible,
+.nxtrunn-clear-all-btn:focus-visible,
+.nxtrunn-club-card:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.nxtrunn-search-input-new:focus-visible {
+    outline: none; /* handled by box-shadow above */
+}
+
+/* ========================================
+   FILTER BAR — SEGMENTED CONTROL
+   ======================================== */
+.nxtrunn-filters-new {
+    position: sticky;
+    top: 49px;
+    z-index: 30;
+    background: var(--color-surface);
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.nxtrunn-filter-pills-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-md);
+    padding: 3px;
+}
+
+.nxtrunn-filter-pill {
+    padding: 10px 8px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    line-height: 1;
+    min-height: 44px;
+    position: relative;
+}
+
+.nxtrunn-filter-pill svg {
+    width: 15px;
+    height: 15px;
+}
+
+.nxtrunn-filter-pill:hover {
+    color: var(--color-primary);
+    background: rgba(124, 90, 120, 0.06);
+}
+
+.nxtrunn-filter-pill:active {
+    transform: scale(0.97);
+}
+
+.nxtrunn-filter-pill.active {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* Active pill indicator dot */
+.nxtrunn-filter-pill.active::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--color-primary);
+}
+
+/* ========================================
+   RESULTS COUNT
+   ======================================== */
+.nxtrunn-results-count-new {
+    padding: 10px 16px;
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.nxtrunn-results-count-new .count {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+/* ========================================
+   CLUB LIST — COMPACT ROWS
+   ======================================== */
+.nxtrunn-directory-grid-new {
+    padding: 0;
+}
+
+/* ========================================
+   CLUB CARD — CLEAN ROW STYLE
+   ======================================== */
+.nxtrunn-club-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+    transition: background 0.2s;
+    animation: fadeIn 0.3s ease-out both;
+}
+
+.nxtrunn-club-card:hover {
+    background: var(--color-surface-raised);
+}
+
+.nxtrunn-club-card:active {
+    background: var(--color-border);
+}
+
+.nxtrunn-club-card:last-child {
+    border-bottom: none;
+}
+
+/* Club Photo */
+.nxtrunn-club-photo {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--color-surface-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nxtrunn-club-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.nxtrunn-club-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+}
+
+/* Club Info — Middle */
+.nxtrunn-club-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.nxtrunn-club-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 2px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+
+.nxtrunn-club-location {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    margin-bottom: 6px;
+    line-height: 1;
+}
+
+.nxtrunn-club-location svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    color: var(--color-primary-light);
+}
+
+.nxtrunn-club-location span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Distance badge for Near Me */
+.nxtrunn-club-distance {
+    font-size: 0.6875rem;
+    color: var(--color-slate);
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+/* Badges — Inline with Dot Indicators */
+.nxtrunn-club-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.nxtrunn-club-badges:empty {
+    display: none;
+}
+
+.nxtrunn-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: var(--radius-full);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/* Colored dot before badge text */
+.nxtrunn-badge::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.nxtrunn-badge-woman {
+    background: rgba(212, 97, 122, 0.10);
+    color: var(--color-woman);
+}
+.nxtrunn-badge-woman::before {
+    background: var(--color-woman);
+}
+
+.nxtrunn-badge-bipoc {
+    background: rgba(139, 99, 64, 0.10);
+    color: var(--color-bipoc);
+}
+.nxtrunn-badge-bipoc::before {
+    background: var(--color-bipoc);
+}
+
+.nxtrunn-badge-sponsor {
+    background: rgba(78, 111, 168, 0.08);
+    color: var(--color-slate);
+}
+.nxtrunn-badge-sponsor::before {
+    background: var(--color-slate);
+}
+
+/* Club Meta — Right Side (hidden on mobile) */
+.nxtrunn-club-meta-right {
+    flex-shrink: 0;
+    display: none;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.nxtrunn-club-pace {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+}
+
+.nxtrunn-club-arrow {
+    width: 16px;
+    height: 16px;
+    color: var(--color-text-disabled);
+    transition: transform 0.2s, color 0.2s;
+}
+
+.nxtrunn-club-card:hover .nxtrunn-club-arrow {
+    transform: translateX(3px);
+    color: var(--color-primary);
+}
+
+/* ========================================
+   SKELETON LOADING STATE
+   ======================================== */
+.nxtrunn-skeleton-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.nxtrunn-skeleton-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-raised);
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+.nxtrunn-skeleton-lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nxtrunn-skeleton-line {
+    height: 12px;
+    border-radius: 6px;
+    background: var(--color-surface-raised);
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.nxtrunn-skeleton-line:nth-child(1) { width: 55%; }
+.nxtrunn-skeleton-line:nth-child(2) { width: 35%; height: 10px; }
+.nxtrunn-skeleton-line:nth-child(3) { width: 45%; height: 10px; }
+
+.nxtrunn-skeleton-card:nth-child(2) .nxtrunn-skeleton-line { animation-delay: 0.15s; }
+.nxtrunn-skeleton-card:nth-child(3) .nxtrunn-skeleton-line { animation-delay: 0.3s; }
+.nxtrunn-skeleton-card:nth-child(4) .nxtrunn-skeleton-line { animation-delay: 0.45s; }
+
+@keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* ========================================
+   EMPTY STATE
+   ======================================== */
+.nxtrunn-empty-state {
+    text-align: center;
+    padding: 64px 24px;
+}
+
+.nxtrunn-empty-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 20px;
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nxtrunn-empty-icon svg {
+    width: 32px;
+    height: 32px;
+    color: var(--color-text-disabled);
+}
+
+.nxtrunn-empty-state svg:not(.nxtrunn-empty-icon svg) {
+    display: none;
+}
+
+.nxtrunn-empty-state h3 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.nxtrunn-empty-state p {
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.nxtrunn-clear-all-btn {
+    padding: 10px 24px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    min-height: 44px;
+}
+
+.nxtrunn-clear-all-btn:hover {
+    background: var(--color-primary-dark);
+}
+
+.nxtrunn-clear-all-btn:active {
+    transform: scale(0.97);
+}
+
+/* ========================================
+   LOADING SPINNER (fallback)
+   ======================================== */
+.nxtrunn-loading-new {
+    display: flex;
+    justify-content: center;
+    padding: 48px;
+}
+
+.nxtrunn-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Stagger entrance */
+.nxtrunn-club-card:nth-child(1)  { animation-delay: 0.00s; }
+.nxtrunn-club-card:nth-child(2)  { animation-delay: 0.03s; }
+.nxtrunn-club-card:nth-child(3)  { animation-delay: 0.04s; }
+.nxtrunn-club-card:nth-child(4)  { animation-delay: 0.06s; }
+.nxtrunn-club-card:nth-child(5)  { animation-delay: 0.08s; }
+.nxtrunn-club-card:nth-child(6)  { animation-delay: 0.10s; }
+.nxtrunn-club-card:nth-child(7)  { animation-delay: 0.12s; }
+.nxtrunn-club-card:nth-child(8)  { animation-delay: 0.14s; }
+.nxtrunn-club-card:nth-child(9)  { animation-delay: 0.16s; }
+.nxtrunn-club-card:nth-child(10) { animation-delay: 0.18s; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ========================================
+   MODAL — REDESIGNED (Mobile-first sheet)
+   ======================================== */
+.nxtrunn-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(28, 23, 32, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+}
+
+.nxtrunn-modal-content {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-width: 560px;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+}
+
+/* Mobile drag handle */
+.nxtrunn-modal-drag-handle {
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+    margin: 8px auto 0;
+}
+
+/* Close button */
+.nxtrunn-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    min-height: 44px;
+    min-width: 44px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s;
+}
+
+.nxtrunn-modal-close:hover {
+    background: var(--color-surface-raised);
+    border-color: var(--color-primary-light);
+}
+
+.nxtrunn-modal-close:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.nxtrunn-modal-close svg {
+    width: 18px;
+    height: 18px;
+    color: var(--color-text-secondary);
+    stroke: currentColor;
+    stroke-width: 2.5;
+    pointer-events: none;
+}
+
+/* Modal photo area */
+.nxtrunn-modal-photo {
+    height: 200px;
+    background: var(--color-surface-raised);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nxtrunn-modal-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 24px;
+}
+
+.nxtrunn-modal-photo-initials {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 4rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+}
+
+/* Modal body */
+.nxtrunn-modal-body {
+    padding: 24px;
+}
+
+/* Modal header */
+.nxtrunn-modal-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: -0.3px;
+    line-height: 1.1;
+}
+
+.nxtrunn-modal-subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 12px;
+}
+
+/* Modal badges */
+.nxtrunn-modal-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.nxtrunn-modal-badges .nxtrunn-badge {
+    padding: 4px 12px;
+    font-size: 0.75rem;
+}
+
+/* Quick info bar */
+.nxtrunn-modal-quick-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 12px 16px;
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-md);
+    margin-bottom: 24px;
+}
+
+.nxtrunn-modal-info-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+}
+
+.nxtrunn-modal-info-item svg {
+    width: 16px;
+    height: 16px;
+    color: var(--color-primary-light);
+    flex-shrink: 0;
+}
+
+/* Modal sections */
+.nxtrunn-modal-section {
+    margin-bottom: 24px;
+}
+
+.nxtrunn-modal-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.nxtrunn-modal-section-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--color-text-disabled);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+}
+
+/* Back-compat: old h3 labels */
+.nxtrunn-modal-section h3 {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--color-text-disabled);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+}
+
+.nxtrunn-modal-section p {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    font-size: 0.9375rem;
+}
+
+/* Modal tags (pace, vibe, days) */
+.nxtrunn-modal-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.nxtrunn-modal-tag {
+    padding: 6px 14px;
+    background: var(--color-primary-muted);
+    color: var(--color-primary);
+    border-radius: var(--radius-full);
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+/* Sponsor */
+.nxtrunn-modal-sponsor {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nxtrunn-modal-sponsor span {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+}
+
+/* Divider */
+.nxtrunn-modal-divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 24px 0;
+}
+
+/* Modal action buttons */
+.nxtrunn-modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.nxtrunn-modal-actions a,
+.nxtrunn-modal-actions button {
+    flex: 1;
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.nxtrunn-modal-actions a:active,
+.nxtrunn-modal-actions button:active {
+    transform: scale(0.97);
+}
+
+.nxtrunn-submit-link,
+.nxtrunn-modal-btn-primary {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+}
+
+.nxtrunn-submit-link:hover,
+.nxtrunn-modal-btn-primary:hover {
+    background: var(--color-primary-dark);
+    box-shadow: 0 2px 8px rgba(124, 90, 120, 0.25);
+}
+
+.nxtrunn-instagram-link,
+.nxtrunn-modal-btn-instagram {
+    background: linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%);
+    color: white;
+    border: none;
+}
+
+.nxtrunn-instagram-link:hover,
+.nxtrunn-modal-btn-instagram:hover {
+    box-shadow: 0 2px 12px rgba(131, 58, 180, 0.3);
+}
+
+.nxtrunn-strava-link {
+    background: #FC4C02;
+    color: white;
+    border: none;
+}
+
+.nxtrunn-strava-link:hover {
+    box-shadow: 0 2px 12px rgba(252, 76, 2, 0.3);
+}
+
+.nxtrunn-tiktok-link {
+    background: #000000;
+    color: white;
+    border: none;
+}
+
+.nxtrunn-tiktok-link:hover {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nxtrunn-cancel-btn,
+.nxtrunn-modal-btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+
+.nxtrunn-cancel-btn:hover,
+.nxtrunn-modal-btn-secondary:hover {
+    border-color: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+/* Add Club Modal */
+.nxtrunn-add-modal .nxtrunn-modal-body h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.nxtrunn-add-modal .nxtrunn-modal-body p {
+    color: var(--color-text-secondary);
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+/* ========================================
+   RESPONSIVE — TABLET+
+   ======================================== */
+@media (min-width: 768px) {
+    .nxtrunn-header-new {
+        padding: 16px 24px;
+    }
+
+    .nxtrunn-filters-new {
+        padding: 12px 24px;
+        top: 57px;
+    }
+
+    .nxtrunn-filter-pills-container {
+        grid-template-columns: repeat(4, 1fr);
+        padding: 4px;
+    }
+
+    .nxtrunn-filter-pill {
+        padding: 10px 12px;
+        font-size: 0.8125rem;
+    }
+
+    .nxtrunn-results-count-new {
+        padding: 12px 24px;
+    }
+
+    .nxtrunn-club-card {
+        padding: 16px 24px;
+        gap: 16px;
+    }
+
+    .nxtrunn-club-photo {
+        width: 56px;
+        height: 56px;
+        border-radius: var(--radius-md);
+    }
+
+    .nxtrunn-club-initials {
+        font-size: 1.125rem;
+    }
+
+    .nxtrunn-club-name {
+        font-size: 0.9375rem;
+    }
+
+    .nxtrunn-club-location {
+        font-size: 0.8125rem;
+    }
+
+    .nxtrunn-badge {
+        font-size: 0.6875rem;
+        padding: 3px 10px;
+    }
+
+    .nxtrunn-badge::before {
+        width: 5px;
+        height: 5px;
+    }
+
+    .nxtrunn-club-meta-right {
+        display: flex;
+    }
+
+    .nxtrunn-skeleton-card {
+        padding: 16px 24px;
+        gap: 16px;
+    }
+
+    .nxtrunn-skeleton-avatar {
+        width: 56px;
+        height: 56px;
+        border-radius: var(--radius-md);
+    }
+
+    /* Modal — centered dialog on desktop */
+    .nxtrunn-modal-backdrop {
+        align-items: center;
+        padding: 24px;
+    }
+
+    .nxtrunn-modal-content {
+        border-radius: var(--radius-lg);
+        max-height: 85vh;
+    }
+
+    .nxtrunn-modal-drag-handle {
+        display: none;
+    }
+
+    .nxtrunn-modal-photo {
+        height: 240px;
+    }
+
+    .nxtrunn-modal-body {
+        padding: 32px;
+    }
+
+    .nxtrunn-modal-actions {
+        flex-direction: row;
+    }
+}
+
+/* ========================================
+   VERIFIED BADGE (claimed clubs)
+   ======================================== */
+.nxtrunn-verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-sage);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.nxtrunn-verified-badge svg {
+    width: 14px;
+    height: 14px;
+    fill: var(--color-sage);
+}
+
+/* Verified badge on card */
+.nxtrunn-card-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Barlow Condensed', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-sage);
+    background: rgba(94, 144, 112, 0.10);
+    padding: 2px 8px;
+    border-radius: 9999px;
+}
+
+.nxtrunn-card-verified svg {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+}
+
+/* ========================================
+   CLAIM CLUB BUTTON
+   ======================================== */
+.nxtrunn-claim-btn {
+    background: var(--color-surface);
+    color: var(--color-sage);
+    border: 1.5px solid var(--color-sage);
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.nxtrunn-claim-btn:hover {
+    background: rgba(94, 144, 112, 0.08);
+    border-color: var(--color-sage);
+}
+
+.nxtrunn-claim-btn:active {
+    transform: scale(0.97);
+}
+
+.nxtrunn-claim-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.nxtrunn-claim-btn.claimed {
+    color: var(--color-text-disabled);
+    border-color: var(--color-border);
+    cursor: default;
+    pointer-events: none;
+}
+
+.nxtrunn-edit-club-btn {
+    background: var(--color-sage);
+    color: white;
+    border: none;
+}
+
+.nxtrunn-edit-club-btn:hover {
+    background: #4d7a5e;
+    box-shadow: 0 2px 8px rgba(94, 144, 112, 0.25);
+}
+
+/* ========================================
+   CLAIM FORM (inside modal)
+   ======================================== */
+.nxtrunn-claim-form {
+    margin-top: 24px;
+}
+
+.nxtrunn-claim-form-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.nxtrunn-claim-form-subtitle {
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.nxtrunn-claim-field {
+    margin-bottom: 16px;
+}
+
+.nxtrunn-claim-field label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 6px;
+}
+
+.nxtrunn-claim-field label small {
+    font-weight: 400;
+    color: var(--color-text-secondary);
+}
+
+.nxtrunn-claim-field input,
+.nxtrunn-claim-field select,
+.nxtrunn-claim-field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: var(--color-text-primary);
+    background: var(--color-surface);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.nxtrunn-claim-field input:focus,
+.nxtrunn-claim-field select:focus,
+.nxtrunn-claim-field textarea:focus {
+    outline: none;
+    border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px var(--color-primary-muted);
+}
+
+.nxtrunn-claim-field textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.nxtrunn-claim-submit {
+    width: 100%;
+    padding: 12px 20px;
+    background: var(--color-sage);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 44px;
+    margin-top: 8px;
+}
+
+.nxtrunn-claim-submit:hover {
+    background: #4d7a5e;
+}
+
+.nxtrunn-claim-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   VERIFICATION CODE INPUT
+   ======================================== */
+.nxtrunn-code-section {
+    text-align: center;
+    padding: 24px 0;
+}
+
+.nxtrunn-code-section p {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.nxtrunn-code-input {
+    width: 180px;
+    text-align: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    letter-spacing: 8px;
+    padding: 12px 16px;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+}
+
+.nxtrunn-code-input:focus {
+    outline: none;
+    border-color: var(--color-sage);
+    box-shadow: 0 0 0 3px rgba(94, 144, 112, 0.15);
+}
+
+.nxtrunn-verify-btn {
+    width: 100%;
+    max-width: 240px;
+    padding: 12px 24px;
+    background: var(--color-sage);
+    color: white;
+    border: none;
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 44px;
+}
+
+.nxtrunn-verify-btn:hover {
+    background: #4d7a5e;
+}
+
+.nxtrunn-verify-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Claim success state */
+.nxtrunn-claim-success {
+    text-align: center;
+    padding: 32px 16px;
+}
+
+.nxtrunn-claim-success svg {
+    width: 48px;
+    height: 48px;
+    color: var(--color-sage);
+    margin-bottom: 16px;
+}
+
+.nxtrunn-claim-success h3 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.nxtrunn-claim-success p {
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Claim message (error/info) */
+.nxtrunn-claim-message {
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    margin-bottom: 16px;
+    display: none;
+}
+
+.nxtrunn-claim-message.error {
+    background: rgba(200, 104, 72, 0.1);
+    color: var(--color-terra);
+    display: block;
+}
+
+.nxtrunn-claim-message.success {
+    background: rgba(94, 144, 112, 0.1);
+    color: var(--color-sage);
+    display: block;
+}
+
+/* Sign up prompt for non-logged-in users */
+.nxtrunn-claim-signup {
+    text-align: center;
+    padding: 20px 16px;
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-md);
+    margin-top: 16px;
+}
+
+.nxtrunn-claim-signup p {
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+    margin-bottom: 12px;
+}
+
+.nxtrunn-claim-signup a {
+    display: inline-block;
+    padding: 10px 24px;
+    background: var(--color-sage);
+    color: white;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.nxtrunn-claim-signup a:hover {
+    background: #4d7a5e;
+}
+
+/* ========================================
+   RESPONSIVE — REMOVE BORDERS ON MOBILE
+   ======================================== */
+@media (max-width: 767px) {
+    .nxtrunn-directory-wrapper-new {
+        border-left: none;
+        border-right: none;
+    }
+}

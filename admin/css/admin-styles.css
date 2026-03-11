@@ -1,0 +1,93 @@
+/* NXTRUNN Admin Styles */
+
+/* Verification Metabox */
+.nxtrunn-verification-box {
+    padding: 15px;
+}
+
+.nxtrunn-verification-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.nxtrunn-verification-box ul li {
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #8f657c;
+}
+
+.nxtrunn-verification-box hr {
+    margin: 20px 0;
+    border: none;
+    border-top: 1px solid #e5e5e5;
+}
+
+.nxtrunn-verification-box .button {
+    width: 100%;
+    margin-bottom: 10px;
+    text-align: center;
+    padding: 10px;
+    font-weight: 600;
+}
+
+/* Admin Columns */
+.column-badges {
+    width: 200px;
+}
+
+.column-location {
+    width: 180px;
+}
+
+.column-verification {
+    width: 150px;
+}
+
+/* Settings Page */
+.nxtrunn-settings-page {
+    max-width: 1000px;
+}
+
+.nxtrunn-settings-page .form-table th {
+    width: 250px;
+    font-weight: 600;
+}
+
+.nxtrunn-settings-page .form-table td p.description {
+    margin-top: 5px;
+    font-style: italic;
+    color: #666;
+}
+
+.nxtrunn-settings-page input[type="color"] {
+    width: 80px;
+    height: 40px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Admin Notice - Needs Verification */
+.notice.nxtrunn-verification-notice {
+    border-left-color: #ffc107;
+}
+
+/* Shortcode Table */
+.widefat code {
+    background: #f5f5f5;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+/* System Info Table */
+.widefat tbody tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+.widefat th {
+    width: 200px;
+    font-weight: 600;
+}
