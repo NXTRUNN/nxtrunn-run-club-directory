@@ -99,9 +99,10 @@ class NXTRUNN_Directory {
                     </svg>
                 </div>
                 <h3>No Clubs Found</h3>
-                <p>We couldn't find any clubs matching your search.</p>
-                <p>Try searching by city name, or browse all clubs to explore.</p>
+                <p class="nxtrunn-empty-message">We couldn't find any clubs matching your filters.</p>
+                <p>Try a different search, adjust your pace range, or browse all clubs.</p>
                 <button class="nxtrunn-clear-all-btn">Show All Clubs</button>
+                <p style="margin-top: 16px; font-size: 0.8125rem;">Know a club we're missing? <a href="https://nxtrunn.com/app/add-your-run-club/" style="color: var(--color-primary); font-weight: 600; text-decoration: none;">Add it here</a></p>
             </div>
 
             <!-- Loading Spinner -->
@@ -112,7 +113,7 @@ class NXTRUNN_Directory {
         </div>
 
         <!-- Club Details Modal -->
-        <div class="nxtrunn-modal-backdrop" id="nxtrunn-club-modal" role="dialog" aria-modal="true" aria-label="Club details" style="display: none;">
+        <div class="nxtrunn-modal-backdrop" id="nxtrunn-club-modal" role="dialog" aria-modal="true" aria-labelledby="nxtrunn-modal-title" style="display: none;">
             <div class="nxtrunn-modal-content">
                 <div class="nxtrunn-modal-drag-handle"></div>
                 <button class="nxtrunn-modal-close" aria-label="Close modal">
@@ -151,7 +152,7 @@ class NXTRUNN_Directory {
         </div>
 
         <!-- Pace Filter Modal -->
-        <div class="nxtrunn-modal-backdrop" id="nxtrunn-pace-modal" role="dialog" aria-modal="true" aria-label="Find my pace group" style="display: none;">
+        <div class="nxtrunn-modal-backdrop" id="nxtrunn-pace-modal" role="dialog" aria-modal="true" aria-labelledby="nxtrunn-pace-title" style="display: none;">
             <div class="nxtrunn-modal-content" style="max-width: 400px;">
                 <div class="nxtrunn-modal-drag-handle"></div>
                 <button class="nxtrunn-modal-close" id="nxtrunn-pace-close" aria-label="Close modal">
@@ -161,7 +162,7 @@ class NXTRUNN_Directory {
                 </button>
                 <div class="nxtrunn-modal-body" style="padding-top: 32px;">
                     <div class="nxtrunn-pace-header">
-                        <h3 style="margin: 0 0 4px 0; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.5px;">Find My Pace Group</h3>
+                        <h3 id="nxtrunn-pace-title" style="margin: 0 0 4px 0; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.5px;">Find My Pace Group</h3>
                         <div class="nxtrunn-units-toggle">
                             <button class="nxtrunn-unit-btn active" data-unit="mi">mi</button>
                             <button class="nxtrunn-unit-btn" data-unit="km">km</button>
@@ -175,9 +176,9 @@ class NXTRUNN_Directory {
 
                     <div class="nxtrunn-pace-sliders" style="padding: 16px 8px;">
                         <label style="font-size: 12px; color: var(--color-text-secondary);">Slowest pace I want</label>
-                        <input type="range" id="nxtrunn-pace-min" min="300" max="1800" step="30" value="540" style="width: 100%;">
+                        <input type="range" id="nxtrunn-pace-min" min="300" max="1800" step="30" value="540" style="width: 100%;" aria-label="Slowest pace" aria-valuetext="9:00 min/mi">
                         <label style="font-size: 12px; color: var(--color-text-secondary);">Fastest pace I want</label>
-                        <input type="range" id="nxtrunn-pace-max" min="300" max="1800" step="30" value="720" style="width: 100%;">
+                        <input type="range" id="nxtrunn-pace-max" min="300" max="1800" step="30" value="720" style="width: 100%;" aria-label="Fastest pace" aria-valuetext="12:00 min/mi">
                     </div>
 
                     <div style="text-align: center; margin: 12px 0;">

@@ -17,7 +17,7 @@
     let currentPage = 1;
     let totalPages = 1;
     let isLoadingMore = false;
-    var CLUBS_PER_PAGE = 24;
+    var CLUBS_PER_PAGE = parseInt($('.nxtrunn-directory-wrapper-new').data('per-page')) || 24;
 
     // Initialize directory
     function initDirectory() {
@@ -197,6 +197,7 @@
         $.ajax({
             url: nxtrunn_ajax.ajax_url,
             type: 'POST',
+            timeout: 15000,
             data: buildFilterData(1),
             success: function(response) {
                 hideLoading();
@@ -209,9 +210,13 @@
                     showError();
                 }
             },
-            error: function() {
+            error: function(xhr, status) {
                 hideLoading();
-                showError();
+                if (status === 'timeout') {
+                    showError('Request timed out. Please try again.');
+                } else {
+                    showError();
+                }
             }
         });
     }
@@ -317,6 +322,14 @@
 
         if (!clubs || clubs.length === 0) {
             $grid.empty();
+            // Set contextual empty message
+            var context = '';
+            if (currentFilters.search) context = 'No clubs match "' + currentFilters.search + '".';
+            else if (paceActive) context = 'No clubs found in that pace range.';
+            else if (currentFilters.woman_owned) context = 'No Woman-Owned clubs match your filters.';
+            else if (currentFilters.bipoc_owned) context = 'No BIPOC-Owned clubs match your filters.';
+            else context = 'We couldn\'t find any clubs matching your filters.';
+            $empty.find('.nxtrunn-empty-message').text(context);
             $empty.show();
             return;
         }
@@ -410,6 +423,7 @@
         $.ajax({
             url: nxtrunn_ajax.ajax_url,
             type: 'POST',
+            timeout: 10000,
             data: {
                 action: 'nxtrunn_get_club_details',
                 nonce: nxtrunn_ajax.nonce,
@@ -419,11 +433,11 @@
                 if (response.success) {
                     renderClubModal(response.data);
                 } else {
-                    $body.html('<p style="text-align:center;padding:32px;color:var(--color-text-secondary);">Unable to load club details.</p>');
+                    $body.html('<div class="nxtrunn-modal-error"><p>Unable to load club details.</p><button class="nxtrunn-cancel-btn" onclick="$(\'#nxtrunn-club-modal\').fadeOut(200);$(\'body\').css(\'overflow\',\'\');">Close</button></div>');
                 }
             },
             error: function() {
-                $body.html('<p style="text-align:center;padding:32px;color:var(--color-text-secondary);">Unable to load club details.</p>');
+                $body.html('<div class="nxtrunn-modal-error"><p>Unable to load club details. Check your connection and try again.</p><button class="nxtrunn-cancel-btn" onclick="$(\'#nxtrunn-club-modal\').fadeOut(200);$(\'body\').css(\'overflow\',\'\');">Close</button></div>');
             }
         });
     }
@@ -443,27 +457,31 @@
             badges.push('<span class="nxtrunn-badge nxtrunn-badge-bipoc">BIPOC-Owned</span>');
         }
 
-        var sponsor = club.meta.sponsor || '';
+        var meta = club.meta || {};
+        var contact = club.contact || {};
+        var location = club.location || {};
+
+        var sponsor = meta.sponsor || '';
         if (sponsor) {
             badges.push('<span class="nxtrunn-badge nxtrunn-badge-sponsor">' + sponsor + '</span>');
         }
 
         var description = club.content || club.excerpt || '';
-        var meetingLocation = club.meta.meeting_location || '';
-        var pace = club.meta.pace && club.meta.pace.length > 0 ? club.meta.pace : [];
-        var vibe = club.meta.vibe && club.meta.vibe.length > 0 ? club.meta.vibe : [];
-        var days = club.meta.days && club.meta.days.length > 0 ? club.meta.days : [];
-        var website = club.contact.website || '';
-        var instagram = club.contact.instagram || '';
-        var tiktok = club.contact.tiktok || '';
-        var strava = club.contact.strava || '';
-        var city = club.location.city || '';
-        var state = club.location.state || '';
+        var meetingLocation = meta.meeting_location || '';
+        var pace = meta.pace && meta.pace.length > 0 ? meta.pace : [];
+        var vibe = meta.vibe && meta.vibe.length > 0 ? meta.vibe : [];
+        var days = meta.days && meta.days.length > 0 ? meta.days : [];
+        var website = contact.website || '';
+        var instagram = contact.instagram || '';
+        var tiktok = contact.tiktok || '';
+        var strava = contact.strava || '';
+        var city = location.city || '';
+        var state = location.state || '';
 
         var html = '<div class="nxtrunn-modal-photo">' + photoHtml + '</div>';
 
         html += '<div class="nxtrunn-modal-header">';
-        html += '<h2>' + club.title + '</h2>';
+        html += '<h2 id="nxtrunn-modal-title">' + club.title + '</h2>';
         html += '<p class="nxtrunn-modal-subtitle">Run Club</p>';
         html += '</div>';
 
@@ -536,24 +554,24 @@
         // Action buttons
         html += '<div class="nxtrunn-modal-actions">';
         if (website) {
-            html += '<a href="' + website + '" class="nxtrunn-submit-link nxtrunn-external-link">';
+            html += '<a href="' + website + '" class="nxtrunn-submit-link nxtrunn-external-link" target="_blank" rel="noopener">';
             html += '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>';
             html += 'Visit Website</a>';
         }
         if (instagram) {
             var igHandle = instagram.replace('@', '');
-            html += '<a href="https://instagram.com/' + igHandle + '" class="nxtrunn-instagram-link nxtrunn-external-link">';
+            html += '<a href="https://instagram.com/' + igHandle + '" class="nxtrunn-instagram-link nxtrunn-external-link" target="_blank" rel="noopener">';
             html += '<svg style="width:18px;height:18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>';
             html += 'Instagram</a>';
         }
         if (strava) {
-            html += '<a href="' + strava + '" class="nxtrunn-strava-link nxtrunn-external-link">';
+            html += '<a href="' + strava + '" class="nxtrunn-strava-link nxtrunn-external-link" target="_blank" rel="noopener">';
             html += '<svg style="width:18px;height:18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>';
             html += 'Strava</a>';
         }
         if (tiktok) {
             var tkHandle = tiktok.replace('@', '');
-            html += '<a href="https://tiktok.com/@' + tkHandle + '" class="nxtrunn-tiktok-link nxtrunn-external-link">';
+            html += '<a href="https://tiktok.com/@' + tkHandle + '" class="nxtrunn-tiktok-link nxtrunn-external-link" target="_blank" rel="noopener">';
             html += '<svg style="width:18px;height:18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.48V13a8.28 8.28 0 005.58 2.16V11.7a4.84 4.84 0 01-3.77-1.24V6.69h3.77z"/></svg>';
             html += 'TikTok</a>';
         }
@@ -621,9 +639,10 @@
         closeModal('#' + $modal.attr('id'));
     });
 
-    // Update results count
+    // Update results count with proper pluralization
     function updateResultsCount(count) {
-        $('.nxtrunn-results-count-new .count').text(count + ' clubs found');
+        var label = count === 1 ? '1 club found' : count + ' clubs found';
+        $('.nxtrunn-results-count-new .count').text(label);
     }
 
     // Clear all filters
@@ -641,12 +660,24 @@
             userLng: null
         };
 
+        // Reset pace state
+        paceActive = false;
+        delete currentFilters.pace_min;
+        delete currentFilters.pace_max;
+        delete currentFilters.walker_only;
+
         $('#nxtrunn-search-new').val('');
         $('.nxtrunn-clear-search').hide();
 
         // Reset all pills
         $('.nxtrunn-filter-pill').removeClass('active').attr('aria-selected', 'false');
         $('.nxtrunn-filter-pill[data-filter="all"]').addClass('active').attr('aria-selected', 'true');
+
+        // Reset pace pill text + sliders
+        $('#nxtrunn-pace-pill').text('My Pace');
+        $('#nxtrunn-walker-btn').removeClass('active');
+        $('#nxtrunn-pace-min').val(540);
+        $('#nxtrunn-pace-max').val(720);
 
         // Reset dropdowns
         $('.nxtrunn-dropdown-label').each(function() {
@@ -684,16 +715,22 @@
 
     function showLoading() {
         $('.nxtrunn-loading-new').show();
-        $('.nxtrunn-directory-grid-new').css('opacity', '0.5');
+        $('.nxtrunn-directory-grid-new').css({ opacity: '0.5', 'pointer-events': 'none' });
     }
 
     function hideLoading() {
         $('.nxtrunn-loading-new').hide();
-        $('.nxtrunn-directory-grid-new').css('opacity', '1');
+        $('.nxtrunn-directory-grid-new').css({ opacity: '1', 'pointer-events': '' });
     }
 
-    function showError() {
-        $('.nxtrunn-directory-grid-new').html('<p style="text-align:center;padding:48px;color:var(--color-text-secondary);">Unable to load clubs. Please try again.</p>');
+    function showError(msg) {
+        var message = msg || 'Unable to load clubs. Please try again.';
+        $('.nxtrunn-directory-grid-new').html(
+            '<div style="text-align:center;padding:48px 24px;">' +
+            '<p style="color:var(--color-text-secondary);margin-bottom:16px;">' + message + '</p>' +
+            '<button class="nxtrunn-clear-all-btn" onclick="location.reload()">Refresh Page</button>' +
+            '</div>'
+        );
     }
 
     // ========================================

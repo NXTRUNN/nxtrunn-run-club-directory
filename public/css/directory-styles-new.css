@@ -101,6 +101,24 @@
     background: var(--color-surface);
 }
 
+/* Smooth transitions on all interactive elements */
+.nxtrunn-search-input-new,
+.nxtrunn-filter-pill,
+.nxtrunn-club-card,
+.nxtrunn-add-club-btn,
+.nxtrunn-clear-all-btn,
+.nxtrunn-claim-btn,
+.nxtrunn-claim-submit,
+.nxtrunn-verify-btn,
+.nxtrunn-load-more-btn,
+.nxtrunn-modal-close,
+.nxtrunn-cancel-btn,
+.nxtrunn-submit-link,
+.nxtrunn-walker-btn,
+.nxtrunn-unit-btn {
+    transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s, opacity 0.2s, transform 0.1s;
+}
+
 .nxtrunn-clear-search {
     position: absolute;
     right: 12px;
@@ -1518,12 +1536,57 @@
     border-color: var(--color-primary);
 }
 
+/* Slider hover + focus states */
+.nxtrunn-pace-sliders input[type="range"]::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 6px var(--color-primary-muted), 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.nxtrunn-pace-sliders input[type="range"]:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 4px var(--color-primary-muted);
+}
+
+.nxtrunn-pace-sliders input[type="range"]::-moz-range-thumb:hover {
+    box-shadow: 0 0 0 6px var(--color-primary-muted), 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
 /* Pace pill active state */
 #nxtrunn-pace-pill.active {
     background: var(--color-surface);
     color: var(--color-primary);
     font-weight: 600;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* ========================================
+   GLOBAL DISABLED STATE
+   ======================================== */
+button:disabled,
+button.disabled,
+.nxtrunn-load-more-btn:disabled,
+.nxtrunn-claim-submit:disabled,
+.nxtrunn-verify-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ========================================
+   MODAL ERROR STATE
+   ======================================== */
+.nxtrunn-modal-error {
+    text-align: center;
+    padding: 48px 24px;
+}
+
+.nxtrunn-modal-error p {
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.nxtrunn-modal-error .nxtrunn-cancel-btn {
+    display: inline-block;
 }
 
 /* ========================================
