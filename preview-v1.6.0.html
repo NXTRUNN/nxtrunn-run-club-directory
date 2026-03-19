@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NXTRUNN Run Club Directory — v1.6.0 Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* === DESIGN TOKENS === */
+:root {
+    --color-primary:         #7C5A78;
+    --color-primary-light:   #A07E9C;
+    --color-primary-dark:    #5A3E57;
+    --color-primary-muted:   rgba(124, 90, 120, 0.10);
+    --color-bg:              #F7F4F9;
+    --color-surface:         #FFFFFF;
+    --color-surface-raised:  #F3EFF6;
+    --color-text-primary:    #1C1720;
+    --color-text-secondary:  #6D6070;
+    --color-text-disabled:   #B5A8BA;
+    --color-border:          #E2DAE8;
+    --color-border-focus:    #7C5A78;
+    --color-woman:           #D4617A;
+    --color-bipoc:           #8B6340;
+    --color-amber:           #C9903C;
+    --color-sage:            #5E9070;
+    --color-terra:           #C86848;
+    --color-slate:           #4E6FA8;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body:    'DM Sans', sans-serif;
+    --radius-sm:   6px;
+    --radius-md:   12px;
+    --radius-lg:   20px;
+    --radius-full: 9999px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* === VERSION BANNER === */
+.preview-banner {
+    background: var(--color-primary);
+    color: white;
+    text-align: center;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+.preview-banner span { opacity: 0.7; }
+
+/* === DIRECTORY CONTAINER === */
+.nxtrunn-directory-wrapper-new {
+    max-width: 960px;
+    margin: 0 auto;
+    background: var(--color-surface);
+    min-height: 100vh;
+    border-left: 1px solid var(--color-border);
+    border-right: 1px solid var(--color-border);
+}
+
+/* === STICKY HEADER === */
+.nxtrunn-header-new {
+    position: sticky; top: 0; z-index: 40;
+    background: var(--color-surface);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border);
+}
+.nxtrunn-search-add-container { display: flex; gap: 12px; align-items: center; }
+.nxtrunn-search-wrapper { position: relative; flex: 1; }
+.nxtrunn-search-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 18px; height: 18px; color: var(--color-text-disabled); pointer-events: none;
+}
+.nxtrunn-search-input-new {
+    width: 100%; padding: 11px 14px 11px 42px;
+    border: 1px solid var(--color-border); border-radius: var(--radius-full);
+    font-family: var(--font-body); font-size: 16px;
+    color: var(--color-text-primary); background: var(--color-surface-raised);
+    transition: border-color 0.2s, box-shadow 0.2s; min-height: 44px;
+}
+.nxtrunn-search-input-new::placeholder { color: var(--color-text-disabled); }
+.nxtrunn-search-input-new:focus {
+    outline: none; border-color: var(--color-border-focus);
+    box-shadow: 0 0 0 3px var(--color-primary-muted); background: var(--color-surface);
+}
+.nxtrunn-add-club-btn {
+    padding: 10px 20px; background: var(--color-primary); color: white; border: none;
+    border-radius: var(--radius-full); font-family: var(--font-body);
+    font-weight: 600; font-size: 0.8125rem; cursor: pointer; white-space: nowrap;
+    transition: background 0.2s; min-height: 44px;
+}
+.nxtrunn-add-club-btn:hover { background: var(--color-primary-dark); }
+
+/* === FILTER BAR === */
+.nxtrunn-filters-new {
+    position: sticky; top: 49px; z-index: 30;
+    background: var(--color-surface); padding: 8px 16px;
+    border-bottom: 1px solid var(--color-border);
+}
+.nxtrunn-filter-pills-container {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 4px; background: var(--color-surface-raised);
+    border-radius: var(--radius-md); padding: 3px;
+}
+.nxtrunn-filter-pill {
+    padding: 10px 8px; border: none; border-radius: 8px;
+    background: transparent; color: var(--color-text-secondary);
+    font-family: var(--font-body); font-size: 0.75rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; display: flex;
+    align-items: center; justify-content: center; gap: 6px;
+    min-height: 44px; position: relative;
+}
+.nxtrunn-filter-pill svg { width: 15px; height: 15px; }
+.nxtrunn-filter-pill:hover { color: var(--color-primary); background: rgba(124, 90, 120, 0.06); }
+.nxtrunn-filter-pill.active {
+    background: var(--color-surface); color: var(--color-primary); font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+}
+.nxtrunn-filter-pill.active::after {
+    content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 4px; border-radius: 50%; background: var(--color-primary);
+}
+
+/* === RESULTS COUNT === */
+.nxtrunn-results-count-new {
+    padding: 10px 16px; color: var(--color-text-secondary); font-size: 0.8125rem;
+    border-bottom: 1px solid var(--color-border);
+}
+.nxtrunn-results-count-new .count { font-weight: 600; color: var(--color-text-primary); }
+
+/* === CLUB CARDS === */
+.nxtrunn-directory-grid-new { padding: 0; }
+.nxtrunn-club-card {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    border-bottom: 1px solid var(--color-border); cursor: pointer;
+    transition: background 0.2s; animation: fadeIn 0.3s ease-out both;
+}
+.nxtrunn-club-card:hover { background: var(--color-surface-raised); }
+.nxtrunn-club-card:last-child { border-bottom: none; }
+.nxtrunn-club-photo {
+    flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--radius-sm);
+    overflow: hidden; background: var(--color-surface-raised);
+    display: flex; align-items: center; justify-content: center;
+}
+.nxtrunn-club-initials {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 0.875rem; font-weight: 700;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+}
+.nxtrunn-club-info { flex: 1; min-width: 0; }
+.nxtrunn-club-name {
+    font-size: 0.875rem; font-weight: 600; color: var(--color-text-primary);
+    margin: 0 0 2px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.nxtrunn-club-location {
+    display: flex; align-items: center; gap: 4px;
+    color: var(--color-text-secondary); font-size: 0.75rem; margin-bottom: 6px;
+}
+.nxtrunn-club-location svg { width: 12px; height: 12px; flex-shrink: 0; color: var(--color-primary-light); }
+.nxtrunn-club-distance { font-size: 0.6875rem; color: var(--color-slate); font-weight: 500; margin-left: 4px; }
+.nxtrunn-club-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+.nxtrunn-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 7px; border-radius: var(--radius-full);
+    font-size: 0.625rem; font-weight: 600; letter-spacing: 0.2px; white-space: nowrap;
+}
+.nxtrunn-badge::before { content: ''; width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+.nxtrunn-badge-woman { background: rgba(212, 97, 122, 0.10); color: var(--color-woman); }
+.nxtrunn-badge-woman::before { background: var(--color-woman); }
+.nxtrunn-badge-bipoc { background: rgba(139, 99, 64, 0.10); color: var(--color-bipoc); }
+.nxtrunn-badge-bipoc::before { background: var(--color-bipoc); }
+.nxtrunn-badge-sponsor { background: rgba(78, 111, 168, 0.08); color: var(--color-slate); }
+.nxtrunn-badge-sponsor::before { background: var(--color-slate); }
+.nxtrunn-card-verified {
+    display: inline-flex; align-items: center; gap: 3px; font-size: 10px;
+    font-weight: 700; font-family: 'Barlow Condensed', sans-serif;
+    text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-sage);
+    background: rgba(94, 144, 112, 0.10); padding: 2px 8px; border-radius: 9999px;
+}
+.nxtrunn-card-verified svg { width: 12px; height: 12px; flex-shrink: 0; }
+.nxtrunn-club-meta-right {
+    flex-shrink: 0; display: none; flex-direction: column; align-items: flex-end; gap: 4px;
+}
+.nxtrunn-club-pace { font-size: 0.75rem; color: var(--color-text-secondary); font-weight: 500; }
+.nxtrunn-club-arrow { width: 16px; height: 16px; color: var(--color-text-disabled); transition: transform 0.2s; }
+.nxtrunn-club-card:hover .nxtrunn-club-arrow { transform: translateX(3px); color: var(--color-primary); }
+
+/* === LOAD MORE === */
+.nxtrunn-load-more-wrap { text-align: center; padding: 24px 0; }
+.nxtrunn-load-more-btn {
+    display: inline-block; padding: 12px 32px;
+    background: var(--color-surface); color: var(--color-text-primary);
+    border: 1px solid var(--color-border); border-radius: 9999px;
+    font-family: var(--font-body); font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s ease;
+}
+.nxtrunn-load-more-btn:hover { background: var(--color-surface-raised); border-color: var(--color-primary); color: var(--color-primary); }
+
+/* === PACE MODAL === */
+.nxtrunn-modal-backdrop {
+    position: fixed; inset: 0; background: rgba(28, 23, 32, 0.6);
+    backdrop-filter: blur(6px); z-index: 1000;
+    display: none; align-items: center; justify-content: center; padding: 24px;
+}
+.nxtrunn-modal-backdrop.show { display: flex; }
+.nxtrunn-modal-content {
+    background: var(--color-surface); border-radius: var(--radius-lg);
+    max-width: 400px; width: 100%; max-height: 85vh; overflow-y: auto; position: relative;
+}
+.nxtrunn-modal-close {
+    position: absolute; top: 16px; right: 16px; width: 36px; height: 36px;
+    background: var(--color-surface); border: 1px solid var(--color-border);
+    border-radius: 50%; cursor: pointer; z-index: 20;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+}
+.nxtrunn-modal-close svg { width: 18px; height: 18px; color: var(--color-text-secondary); stroke: currentColor; stroke-width: 2.5; }
+.nxtrunn-modal-body { padding: 32px 24px 24px; }
+.nxtrunn-pace-header { display: flex; align-items: center; justify-content: space-between; }
+.nxtrunn-units-toggle {
+    display: flex; background: var(--color-surface-raised);
+    border-radius: var(--radius-full); padding: 2px; gap: 2px;
+}
+.nxtrunn-unit-btn {
+    padding: 6px 14px; border: none; border-radius: var(--radius-full);
+    background: transparent; color: var(--color-text-secondary);
+    font-family: var(--font-body); font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+}
+.nxtrunn-unit-btn.active {
+    background: var(--color-surface); color: var(--color-primary);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.nxtrunn-pace-sliders input[type="range"] {
+    -webkit-appearance: none; appearance: none; width: 100%;
+    height: 4px; background: var(--color-border); border-radius: var(--radius-full);
+    outline: none; margin: 8px 0 16px;
+}
+.nxtrunn-pace-sliders input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--color-primary); cursor: pointer;
+    border: 3px solid var(--color-surface); box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.nxtrunn-walker-btn {
+    padding: 10px 24px; background: var(--color-surface);
+    color: var(--color-text-secondary); border: 1px solid var(--color-border);
+    border-radius: var(--radius-full); font-family: var(--font-body);
+    font-size: 0.8125rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.nxtrunn-walker-btn:hover { border-color: var(--color-primary-light); color: var(--color-primary); }
+.nxtrunn-walker-btn.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+.nxtrunn-submit-link {
+    background: var(--color-primary); color: white; border: none;
+    padding: 12px 20px; border-radius: var(--radius-md);
+    font-family: var(--font-body); font-weight: 600; font-size: 0.875rem;
+    text-align: center; cursor: pointer; transition: all 0.2s; min-height: 44px;
+}
+.nxtrunn-cancel-btn {
+    background: var(--color-surface); color: var(--color-text-secondary);
+    border: 1px solid var(--color-border); padding: 12px 20px;
+    border-radius: var(--radius-md); font-family: var(--font-body);
+    font-weight: 600; font-size: 0.875rem; cursor: pointer; min-height: 44px;
+}
+
+/* === ANIMATIONS === */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.nxtrunn-club-card:nth-child(1)  { animation-delay: 0.00s; }
+.nxtrunn-club-card:nth-child(2)  { animation-delay: 0.03s; }
+.nxtrunn-club-card:nth-child(3)  { animation-delay: 0.04s; }
+.nxtrunn-club-card:nth-child(4)  { animation-delay: 0.06s; }
+.nxtrunn-club-card:nth-child(5)  { animation-delay: 0.08s; }
+.nxtrunn-club-card:nth-child(6)  { animation-delay: 0.10s; }
+.nxtrunn-club-card:nth-child(7)  { animation-delay: 0.12s; }
+.nxtrunn-club-card:nth-child(8)  { animation-delay: 0.14s; }
+
+/* === RESPONSIVE === */
+@media (min-width: 768px) {
+    .nxtrunn-header-new { padding: 16px 24px; }
+    .nxtrunn-filters-new { padding: 12px 24px; top: 57px; }
+    .nxtrunn-filter-pills-container { grid-template-columns: repeat(5, 1fr); padding: 4px; }
+    .nxtrunn-filter-pill { padding: 10px 12px; font-size: 0.8125rem; }
+    .nxtrunn-results-count-new { padding: 12px 24px; }
+    .nxtrunn-club-card { padding: 16px 24px; gap: 16px; }
+    .nxtrunn-club-photo { width: 56px; height: 56px; border-radius: var(--radius-md); }
+    .nxtrunn-club-initials { font-size: 1.125rem; }
+    .nxtrunn-club-name { font-size: 0.9375rem; }
+    .nxtrunn-club-location { font-size: 0.8125rem; }
+    .nxtrunn-badge { font-size: 0.6875rem; padding: 3px 10px; }
+    .nxtrunn-badge::before { width: 5px; height: 5px; }
+    .nxtrunn-club-meta-right { display: flex; }
+}
+@media (max-width: 767px) {
+    .nxtrunn-directory-wrapper-new { border-left: none; border-right: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="preview-banner">
+    NXTRUNN Run Club Directory — v1.6.0 Preview <span>| Static preview — interactive features work on production</span>
+</div>
+
+<div class="nxtrunn-directory-wrapper-new">
+
+    <!-- Sticky Header -->
+    <div class="nxtrunn-header-new">
+        <div class="nxtrunn-search-add-container">
+            <div class="nxtrunn-search-wrapper">
+                <svg class="nxtrunn-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" placeholder="Search clubs by name or city..." class="nxtrunn-search-input-new">
+            </div>
+            <button class="nxtrunn-add-club-btn">+ Add Club</button>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="nxtrunn-filters-new">
+        <div class="nxtrunn-filter-pills-container">
+            <button class="nxtrunn-filter-pill active">All Clubs</button>
+            <button class="nxtrunn-filter-pill" id="demo-near-me">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v4m0 12v4m10-10h-4M6 12H2"/>
+                </svg>
+                Near Me
+            </button>
+            <button class="nxtrunn-filter-pill" id="demo-pace-pill">My Pace</button>
+            <button class="nxtrunn-filter-pill">Woman-Owned</button>
+            <button class="nxtrunn-filter-pill">BIPOC-Owned</button>
+        </div>
+    </div>
+
+    <!-- Results Count -->
+    <div class="nxtrunn-results-count-new">
+        <span class="count">174</span> clubs found
+    </div>
+
+    <!-- Club Cards Grid -->
+    <div class="nxtrunn-directory-grid-new">
+
+        <!-- Card 1: Verified + BIPOC -->
+        <div class="nxtrunn-club-card">
+            <div class="nxtrunn-club-photo">
+                <div class="nxtrunn-club-initials">BR</div>
+            </div>
+            <div class="nxtrunn-club-info">
+                <h3 class="nxtrunn-club-name">Black Roses NYC</h3>
+                <div class="nxtrunn-club-location">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="2.5"/><path d="M8 1C4.7 1 2 3.5 2 6.6 2 10.7 8 15 8 15s6-4.3 6-8.4C14 3.5 11.3 1 8 1z"/></svg>
+                    <span>Brooklyn, NY</span>
+                </div>
+                <div class="nxtrunn-club-badges">
+                    <span class="nxtrunn-card-verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>Verified</span>
+                    <span class="nxtrunn-badge nxtrunn-badge-bipoc">BIPOC-Owned</span>
+                </div>
+            </div>
+            <div class="nxtrunn-club-meta-right">
+                <span class="nxtrunn-club-pace">Moderate</span>
+                <svg class="nxtrunn-club-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+        <!-- Card 2: Woman-Owned -->
+        <div class="nxtrunn-club-card">
+            <div class="nxtrunn-club-photo">
+                <div class="nxtrunn-club-initials">HR</div>
+            </div>
+            <div class="nxtrunn-club-info">
+                <h3 class="nxtrunn-club-name">Harlem Run</h3>
+                <div class="nxtrunn-club-location">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="2.5"/><path d="M8 1C4.7 1 2 3.5 2 6.6 2 10.7 8 15 8 15s6-4.3 6-8.4C14 3.5 11.3 1 8 1z"/></svg>
+                    <span>Harlem, NY</span>
+                </div>
+                <div class="nxtrunn-club-badges">
+                    <span class="nxtrunn-badge nxtrunn-badge-woman">Woman-Owned</span>
+                </div>
+            </div>
+            <div class="nxtrunn-club-meta-right">
+                <span class="nxtrunn-club-pace">All Paces</span>
+                <svg class="nxtrunn-club-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+        <!-- Card 3: Distance badge (Near Me demo) -->
+        <div class="nxtrunn-club-card">
+            <div class="nxtrunn-club-photo">
+                <div class="nxtrunn-club-initials">NR</div>
+            </div>
+            <div class="nxtrunn-club-info">
+                <h3 class="nxtrunn-club-name">November Project NYC</h3>
+                <div class="nxtrunn-club-location">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="2.5"/><path d="M8 1C4.7 1 2 3.5 2 6.6 2 10.7 8 15 8 15s6-4.3 6-8.4C14 3.5 11.3 1 8 1z"/></svg>
+                    <span>Manhattan, NY</span>
+                    <span class="nxtrunn-club-distance">2.4 mi</span>
+                </div>
+                <div class="nxtrunn-club-badges"></div>
+            </div>
+            <div class="nxtrunn-club-meta-right">
+                <span class="nxtrunn-club-pace">Fast</span>
+                <svg class="nxtrunn-club-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+        <!-- Card 4: Both badges + Verified -->
+        <div class="nxtrunn-club-card">
+            <div class="nxtrunn-club-photo">
+                <div class="nxtrunn-club-initials">GR</div>
+            </div>
+            <div class="nxtrunn-club-info">
+                <h3 class="nxtrunn-club-name">GumboFit Run Crew</h3>
+                <div class="nxtrunn-club-location">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="2.5"/><path d="M8 1C4.7 1 2 3.5 2 6.6 2 10.7 8 15 8 15s6-4.3 6-8.4C14 3.5 11.3 1 8 1z"/></svg>
+                    <span>Bed-Stuy, NY</span>
+                </div>
+                <div class="nxtrunn-club-badges">
+                    <span class="nxtrunn-card-verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>Verified</span>
+                    <span class="nxtrunn-badge nxtrunn-badge-woman">Woman-Owned</span>
+                    <span class="nxtrunn-badge nxtrunn-badge-bipoc">BIPOC-Owned</span>
+                </div>
+            </div>
+            <div class="nxtrunn-club-meta-right">
+                <span class="nxtrunn-club-pace">Casual</span>
+                <svg class="nxtrunn-club-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+        <!-- Card 5: Sponsor badge -->
+        <div class="nxtrunn-club-card">
+            <div class="nxtrunn-club-photo">
+                <div class="nxtrunn-club-initials">WP</div>
+            </div>
+            <div class="nxtrunn-club-info">
+                <h3 class="nxtrunn-club-name">WilPower Running</h3>
+                <div class="nxtrunn-club-location">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="2.5"/><path d="M8 1C4.7 1 2 3.5 2 6.6 2 10.7 8 15 8 15s6-4.3 6-8.4C14 3.5 11.3 1 8 1z"/></svg>
+                    <span>Queens, NY</span>
+                </div>
+                <div class="nxtrunn-club-badges">
+                    <span class="nxtrunn-badge nxtrunn-badge-sponsor">Nike</span>
+                </div>
+            </div>
+            <div class="nxtrunn-club-meta-right">
+                <span class="nxtrunn-club-pace">All Paces</span>
+                <svg class="nxtrunn-club-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+        <!-- Card 6: Plain -->
+        <div class="nxtrunn-club-card">
+            <div class="nxtrunn-club-photo">
+                <div class="nxtrunn-club-initials">OR</div>
+            </div>
+            <div class="nxtrunn-club-info">
+                <h3 class="nxtrunn-club-name">Orchard Street Runners</h3>
+                <div class="nxtrunn-club-location">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="2.5"/><path d="M8 1C4.7 1 2 3.5 2 6.6 2 10.7 8 15 8 15s6-4.3 6-8.4C14 3.5 11.3 1 8 1z"/></svg>
+                    <span>Lower East Side, NY</span>
+                </div>
+                <div class="nxtrunn-club-badges"></div>
+            </div>
+            <div class="nxtrunn-club-meta-right">
+                <span class="nxtrunn-club-pace">Moderate</span>
+                <svg class="nxtrunn-club-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+        <!-- Card 7 -->
+        <div class="nxtrunn-club-card">
+            <div class="nxtrunn-club-photo">
+                <div class="nxtrunn-club-initials">BR</div>
+            </div>
+            <div class="nxtrunn-club-info">
+                <h3 class="nxtrunn-club-name">Bronx Runners</h3>
+                <div class="nxtrunn-club-location">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="2.5"/><path d="M8 1C4.7 1 2 3.5 2 6.6 2 10.7 8 15 8 15s6-4.3 6-8.4C14 3.5 11.3 1 8 1z"/></svg>
+                    <span>Bronx, NY</span>
+                </div>
+                <div class="nxtrunn-club-badges">
+                    <span class="nxtrunn-badge nxtrunn-badge-bipoc">BIPOC-Owned</span>
+                </div>
+            </div>
+            <div class="nxtrunn-club-meta-right">
+                <span class="nxtrunn-club-pace">Casual</span>
+                <svg class="nxtrunn-club-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+        <!-- Card 8 -->
+        <div class="nxtrunn-club-card">
+            <div class="nxtrunn-club-photo">
+                <div class="nxtrunn-club-initials">FR</div>
+            </div>
+            <div class="nxtrunn-club-info">
+                <h3 class="nxtrunn-club-name">Front Runners New York</h3>
+                <div class="nxtrunn-club-location">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="2.5"/><path d="M8 1C4.7 1 2 3.5 2 6.6 2 10.7 8 15 8 15s6-4.3 6-8.4C14 3.5 11.3 1 8 1z"/></svg>
+                    <span>Manhattan, NY</span>
+                </div>
+                <div class="nxtrunn-club-badges"></div>
+            </div>
+            <div class="nxtrunn-club-meta-right">
+                <span class="nxtrunn-club-pace">All Paces</span>
+                <svg class="nxtrunn-club-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Load More -->
+    <div class="nxtrunn-load-more-wrap">
+        <button class="nxtrunn-load-more-btn">Load More</button>
+    </div>
+
+</div>
+
+<!-- Pace Filter Modal -->
+<div class="nxtrunn-modal-backdrop" id="pace-modal">
+    <div class="nxtrunn-modal-content" style="max-width: 400px;">
+        <button class="nxtrunn-modal-close" onclick="document.getElementById('pace-modal').classList.remove('show')">
+            <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div class="nxtrunn-modal-body">
+            <div class="nxtrunn-pace-header">
+                <h3 style="margin: 0 0 4px 0; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.5px;">Find My Pace Group</h3>
+                <div class="nxtrunn-units-toggle">
+                    <button class="nxtrunn-unit-btn active">mi</button>
+                    <button class="nxtrunn-unit-btn">km</button>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0 8px;">
+                <span id="pace-display" style="font-size: 24px; font-weight: 700; color: var(--color-text-primary);">9:00 - 12:00</span>
+                <span style="font-size: 14px; color: var(--color-text-secondary); display: block;">min/mi</span>
+            </div>
+
+            <div class="nxtrunn-pace-sliders" style="padding: 16px 8px;">
+                <label style="font-size: 12px; color: var(--color-text-secondary);">Slowest pace I want</label>
+                <input type="range" id="pace-min" min="300" max="1800" step="30" value="540">
+                <label style="font-size: 12px; color: var(--color-text-secondary);">Fastest pace I want</label>
+                <input type="range" id="pace-max" min="300" max="1800" step="30" value="720">
+            </div>
+
+            <div style="text-align: center; margin: 12px 0;">
+                <button class="nxtrunn-walker-btn" id="walker-btn">I'm a walker</button>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 16px;">
+                <button class="nxtrunn-cancel-btn" style="flex:1;" onclick="document.getElementById('pace-modal').classList.remove('show')">Clear</button>
+                <button class="nxtrunn-submit-link" style="flex:1; text-align:center;" onclick="document.getElementById('pace-modal').classList.remove('show')">Show Clubs</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Interactive demo: Pace pill opens modal
+document.getElementById('demo-pace-pill').addEventListener('click', function() {
+    document.getElementById('pace-modal').classList.add('show');
+});
+
+// Close modal on backdrop click
+document.getElementById('pace-modal').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('show');
+});
+
+// Unit toggle
+document.querySelectorAll('.nxtrunn-unit-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.nxtrunn-unit-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+
+// Walker toggle
+document.getElementById('walker-btn').addEventListener('click', function() {
+    this.classList.toggle('active');
+});
+
+// Pace slider display
+function secToDisplay(sec) {
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+}
+document.getElementById('pace-min').addEventListener('input', updatePace);
+document.getElementById('pace-max').addEventListener('input', updatePace);
+function updatePace() {
+    var min = parseInt(document.getElementById('pace-min').value);
+    var max = parseInt(document.getElementById('pace-max').value);
+    document.getElementById('pace-display').textContent = secToDisplay(min) + ' - ' + secToDisplay(max);
+}
+
+// Filter pill toggle demo
+document.querySelectorAll('.nxtrunn-filter-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+        if (this.id === 'demo-pace-pill') return; // handled above
+        document.querySelectorAll('.nxtrunn-filter-pill').forEach(p => p.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
+</script>
+
+</body>
+</html>
