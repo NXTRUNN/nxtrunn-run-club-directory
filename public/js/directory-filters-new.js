@@ -247,7 +247,7 @@
 
     // Build filter params for AJAX
     function buildFilterData(page) {
-        return {
+        var data = {
             action: 'nxtrunn_filter_directory',
             nonce: nxtrunn_ajax.nonce,
             search: currentFilters.search || '',
@@ -260,6 +260,13 @@
             per_page: CLUBS_PER_PAGE,
             page: page
         };
+
+        // Pace filter params (from My Pace modal)
+        if (currentFilters.pace_min) data.pace_min = currentFilters.pace_min;
+        if (currentFilters.pace_max) data.pace_max = currentFilters.pace_max;
+        if (currentFilters.walker_only) data.walker_only = currentFilters.walker_only;
+
+        return data;
     }
 
     // Show/hide Load More button
