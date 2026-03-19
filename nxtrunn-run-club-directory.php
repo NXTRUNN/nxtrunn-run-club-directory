@@ -3,7 +3,7 @@
  * Plugin Name:       NXTRUNN Run Club Directory
  * Plugin URI:        https://nxtrunn.com
  * Description:       A comprehensive run club directory with diversity badges, worldwide location search, and admin approval workflow.
- * Version:           1.6.0
+ * Version:           1.6.1
  * Author:            NXTRUNN
  * Author URI:        https://nxtrunn.com
  * License:           GPL-2.0+
@@ -20,7 +20,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Plugin version
-define( 'NXTRUNN_VERSION', '1.6.0' );
+define( 'NXTRUNN_VERSION', '1.6.1' );
 define( 'NXTRUNN_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NXTRUNN_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'NXTRUNN_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

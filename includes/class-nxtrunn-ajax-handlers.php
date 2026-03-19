@@ -51,8 +51,9 @@ class NXTRUNN_AJAX_Handlers {
         $user_lng = floatval( $_POST['lng'] );
         $radius = isset( $_POST['radius'] ) ? intval( $_POST['radius'] ) : 25;
         $unit = isset( $_POST['unit'] ) ? sanitize_text_field( $_POST['unit'] ) : 'mi';
-        
-        if ( ! $user_lat || ! $user_lng ) {
+
+        // Validate coordinates are within valid bounds
+        if ( ! $user_lat || ! $user_lng || $user_lat < -90 || $user_lat > 90 || $user_lng < -180 || $user_lng > 180 ) {
             wp_send_json_error( array( 'message' => 'Invalid coordinates' ) );
         }
         
@@ -74,8 +75,15 @@ class NXTRUNN_AJAX_Handlers {
         );
         
         $clubs = get_posts( $args );
+
+        // Prime meta cache in one query instead of N+1
+        if ( ! empty( $clubs ) ) {
+            $post_ids = wp_list_pluck( $clubs, 'ID' );
+            update_meta_cache( 'post', $post_ids );
+        }
+
         $nearby_clubs = array();
-        
+
         foreach ( $clubs as $club ) {
             
             $club_lat = get_post_meta( $club->ID, '_nxtrunn_latitude', true );
@@ -244,8 +252,12 @@ class NXTRUNN_AJAX_Handlers {
         
         $query = new WP_Query( $args );
         $clubs = array();
-        
+
         if ( $query->have_posts() ) {
+            // Prime meta cache in one query instead of N+1
+            $post_ids = wp_list_pluck( $query->posts, 'ID' );
+            update_meta_cache( 'post', $post_ids );
+
             while ( $query->have_posts() ) {
                 $query->the_post();
                 $clubs[] = $this->format_club_data( get_the_ID() );

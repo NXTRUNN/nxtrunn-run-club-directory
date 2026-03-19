@@ -41,6 +41,12 @@ class NXTRUNN_Claims {
             wp_send_json_error( array( 'message' => 'Please fill in all required fields.' ) );
         }
 
+        // Validate role against allowed values
+        $allowed_roles = array( 'founder', 'captain', 'admin', 'ambassador' );
+        if ( ! in_array( $role, $allowed_roles, true ) ) {
+            wp_send_json_error( array( 'message' => 'Invalid role selected.' ) );
+        }
+
         $club = get_post( $club_id );
         if ( ! $club || $club->post_type !== 'run_club' ) {
             wp_send_json_error( array( 'message' => 'Club not found.' ) );
@@ -327,11 +333,14 @@ class NXTRUNN_Claims {
         // Try to find a page with the run club directory shortcode
         global $wpdb;
         $page_id = $wpdb->get_var(
-            "SELECT ID FROM {$wpdb->posts}
-             WHERE post_content LIKE '%[nxtrunn_run_club_directory%'
-             AND post_status = 'publish'
-             AND post_type = 'page'
-             LIMIT 1"
+            $wpdb->prepare(
+                "SELECT ID FROM {$wpdb->posts}
+                 WHERE post_content LIKE %s
+                 AND post_status = 'publish'
+                 AND post_type = 'page'
+                 LIMIT 1",
+                '%[nxtrunn_run_club_directory%'
+            )
         );
 
         if ( $page_id ) {

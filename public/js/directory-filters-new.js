@@ -354,10 +354,11 @@
 
     // Create club card — NEW row layout
     function createClubCard(club) {
+        var safeTitle = escapeHtml(club.title);
         var initials = getInitials(club.title);
         var photoHtml = club.thumbnail ?
-            '<img src="' + club.thumbnail + '" alt="' + club.title + '" loading="lazy">' :
-            '<div class="nxtrunn-club-initials">' + initials + '</div>';
+            '<img src="' + escapeAttr(club.thumbnail) + '" alt="' + escapeAttr(club.title) + '" loading="lazy">' :
+            '<div class="nxtrunn-club-initials">' + escapeHtml(initials) + '</div>';
 
         var badges = [];
         if (club.badges.woman_run) {
@@ -369,21 +370,21 @@
 
         var sponsor = club.meta && club.meta.sponsor ? club.meta.sponsor : null;
         if (sponsor) {
-            badges.push('<span class="nxtrunn-badge nxtrunn-badge-sponsor">' + sponsor + '</span>');
+            badges.push('<span class="nxtrunn-badge nxtrunn-badge-sponsor">' + escapeHtml(sponsor) + '</span>');
         }
 
-        var pace = club.meta && club.meta.pace && club.meta.pace.length > 0 ? club.meta.pace[0] : '';
-        var distanceHtml = club.distance ? '<span class="nxtrunn-club-distance">' + club.distance + '</span>' : '';
-        var city = club.location && club.location.city ? club.location.city : 'Location';
-        var state = club.location && club.location.state ? club.location.state : 'TBD';
+        var pace = club.meta && club.meta.pace && club.meta.pace.length > 0 ? escapeHtml(club.meta.pace[0]) : '';
+        var distanceHtml = club.distance ? '<span class="nxtrunn-club-distance">' + escapeHtml(club.distance) + '</span>' : '';
+        var city = club.location && club.location.city ? escapeHtml(club.location.city) : 'Location';
+        var state = club.location && club.location.state ? escapeHtml(club.location.state) : 'TBD';
 
         var verifiedBadge = (club.claim && club.claim.claimed) ?
             '<span class="nxtrunn-card-verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>Verified</span>' : '';
 
-        return '<div class="nxtrunn-club-card" data-club-id="' + club.id + '" tabindex="0" role="button" aria-label="View ' + club.title + ' profile">' +
+        return '<div class="nxtrunn-club-card" data-club-id="' + parseInt(club.id) + '" tabindex="0" role="button" aria-label="View ' + escapeAttr(club.title) + ' profile">' +
             '<div class="nxtrunn-club-photo">' + photoHtml + '</div>' +
             '<div class="nxtrunn-club-info">' +
-                '<h3 class="nxtrunn-club-name">' + club.title + '</h3>' +
+                '<h3 class="nxtrunn-club-name">' + safeTitle + '</h3>' +
                 '<div class="nxtrunn-club-location">' +
                     '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="7" r="2.5"/><path d="M8 1C4.7 1 2 3.5 2 6.6 2 10.7 8 15 8 15s6-4.3 6-8.4C14 3.5 11.3 1 8 1z"/></svg>' +
                     '<span>' + city + ', ' + state + '</span>' +
@@ -444,10 +445,11 @@
 
     // Render club modal — NEW layout
     function renderClubModal(club) {
+        var safeTitle = escapeHtml(club.title);
         var initials = getInitials(club.title);
         var photoHtml = club.thumbnail ?
-            '<img src="' + club.thumbnail + '" alt="' + club.title + '">' :
-            '<div class="nxtrunn-modal-photo-initials">' + initials + '</div>';
+            '<img src="' + escapeAttr(club.thumbnail) + '" alt="' + escapeAttr(club.title) + '">' :
+            '<div class="nxtrunn-modal-photo-initials">' + escapeHtml(initials) + '</div>';
 
         var badges = [];
         if (club.badges.woman_run) {
@@ -463,7 +465,7 @@
 
         var sponsor = meta.sponsor || '';
         if (sponsor) {
-            badges.push('<span class="nxtrunn-badge nxtrunn-badge-sponsor">' + sponsor + '</span>');
+            badges.push('<span class="nxtrunn-badge nxtrunn-badge-sponsor">' + escapeHtml(sponsor) + '</span>');
         }
 
         var description = club.content || club.excerpt || '';
@@ -475,13 +477,13 @@
         var instagram = contact.instagram || '';
         var tiktok = contact.tiktok || '';
         var strava = contact.strava || '';
-        var city = location.city || '';
-        var state = location.state || '';
+        var city = escapeHtml(location.city || '');
+        var state = escapeHtml(location.state || '');
 
         var html = '<div class="nxtrunn-modal-photo">' + photoHtml + '</div>';
 
         html += '<div class="nxtrunn-modal-header">';
-        html += '<h2 id="nxtrunn-modal-title">' + club.title + '</h2>';
+        html += '<h2 id="nxtrunn-modal-title">' + safeTitle + '</h2>';
         html += '<p class="nxtrunn-modal-subtitle">Run Club</p>';
         html += '</div>';
 
@@ -508,7 +510,7 @@
         if (meetingLocation) {
             html += '<div class="nxtrunn-modal-section">';
             html += '<div class="nxtrunn-modal-section-label">Meeting Location</div>';
-            html += '<p>' + meetingLocation + '</p>';
+            html += '<p>' + escapeHtml(meetingLocation) + '</p>';
             html += '</div>';
             html += '<div class="nxtrunn-modal-divider"></div>';
         }
@@ -518,7 +520,7 @@
             html += '<div class="nxtrunn-modal-section-label">Pace</div>';
             html += '<div class="nxtrunn-modal-tags">';
             pace.forEach(function(p) {
-                html += '<span class="nxtrunn-modal-tag">' + p + '</span>';
+                html += '<span class="nxtrunn-modal-tag">' + escapeHtml(p) + '</span>';
             });
             html += '</div></div>';
         }
@@ -528,7 +530,7 @@
             html += '<div class="nxtrunn-modal-section-label">Vibe</div>';
             html += '<div class="nxtrunn-modal-tags">';
             vibe.forEach(function(v) {
-                html += '<span class="nxtrunn-modal-tag">' + v + '</span>';
+                html += '<span class="nxtrunn-modal-tag">' + escapeHtml(v) + '</span>';
             });
             html += '</div></div>';
         }
@@ -538,7 +540,7 @@
             html += '<div class="nxtrunn-modal-section-label">Run Days</div>';
             html += '<div class="nxtrunn-modal-tags">';
             days.forEach(function(d) {
-                html += '<span class="nxtrunn-modal-tag">' + d + '</span>';
+                html += '<span class="nxtrunn-modal-tag">' + escapeHtml(d) + '</span>';
             });
             html += '</div></div>';
         }
@@ -547,30 +549,30 @@
             html += '<div class="nxtrunn-modal-divider"></div>';
             html += '<div class="nxtrunn-modal-section">';
             html += '<div class="nxtrunn-modal-section-label">Sponsored By</div>';
-            html += '<div class="nxtrunn-modal-sponsor"><span>' + sponsor + '</span></div>';
+            html += '<div class="nxtrunn-modal-sponsor"><span>' + escapeHtml(sponsor) + '</span></div>';
             html += '</div>';
         }
 
         // Action buttons
         html += '<div class="nxtrunn-modal-actions">';
         if (website) {
-            html += '<a href="' + website + '" class="nxtrunn-submit-link nxtrunn-external-link" target="_blank" rel="noopener">';
+            html += '<a href="' + escapeAttr(website) + '" class="nxtrunn-submit-link nxtrunn-external-link" target="_blank" rel="noopener">';
             html += '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>';
             html += 'Visit Website</a>';
         }
         if (instagram) {
-            var igHandle = instagram.replace('@', '');
+            var igHandle = escapeAttr(instagram.replace('@', ''));
             html += '<a href="https://instagram.com/' + igHandle + '" class="nxtrunn-instagram-link nxtrunn-external-link" target="_blank" rel="noopener">';
             html += '<svg style="width:18px;height:18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>';
             html += 'Instagram</a>';
         }
         if (strava) {
-            html += '<a href="' + strava + '" class="nxtrunn-strava-link nxtrunn-external-link" target="_blank" rel="noopener">';
+            html += '<a href="' + escapeAttr(strava) + '" class="nxtrunn-strava-link nxtrunn-external-link" target="_blank" rel="noopener">';
             html += '<svg style="width:18px;height:18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>';
             html += 'Strava</a>';
         }
         if (tiktok) {
-            var tkHandle = tiktok.replace('@', '');
+            var tkHandle = escapeAttr(tiktok.replace('@', ''));
             html += '<a href="https://tiktok.com/@' + tkHandle + '" class="nxtrunn-tiktok-link nxtrunn-external-link" target="_blank" rel="noopener">';
             html += '<svg style="width:18px;height:18px;" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.48V13a8.28 8.28 0 005.58 2.16V11.7a4.84 4.84 0 01-3.77-1.24V6.69h3.77z"/></svg>';
             html += 'TikTok</a>';
@@ -693,7 +695,19 @@
     }
 
     // Helpers
+    function escapeHtml(str) {
+        if (!str) return '';
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+    }
+
+    function escapeAttr(str) {
+        return escapeHtml(str).replace(/"/g, '&quot;');
+    }
+
     function getInitials(name) {
+        if (!name) return '';
         return name.split(' ').map(function(word) { return word[0]; }).join('').substring(0, 2).toUpperCase();
     }
 
@@ -934,7 +948,7 @@
             '<div class="nxtrunn-claim-form">' +
                 '<div class="nxtrunn-code-section">' +
                     '<div class="nxtrunn-claim-form-title">Enter Your Code</div>' +
-                    '<p>We sent a 6-digit code to<br><strong>' + email + '</strong></p>' +
+                    '<p>We sent a 6-digit code to<br><strong>' + escapeHtml(email) + '</strong></p>' +
                     '<div class="nxtrunn-claim-message" id="nxtrunn-verify-msg"></div>' +
                     '<input type="text" class="nxtrunn-code-input" id="nxtrunn-code-input" maxlength="6" placeholder="000000" inputmode="numeric" pattern="[0-9]*">' +
                     '<br>' +
@@ -1055,35 +1069,35 @@
             '<div class="nxtrunn-claim-message" id="nxtrunn-edit-msg"></div>' +
             '<div class="nxtrunn-claim-field">' +
                 '<label>Description</label>' +
-                '<textarea id="nxtrunn-edit-desc" rows="3">' + desc + '</textarea>' +
+                '<textarea id="nxtrunn-edit-desc" rows="3">' + escapeHtml(desc) + '</textarea>' +
             '</div>' +
             '<div class="nxtrunn-claim-field">' +
                 '<label>City</label>' +
-                '<input type="text" id="nxtrunn-edit-city" value="' + city + '">' +
+                '<input type="text" id="nxtrunn-edit-city" value="' + escapeAttr(city) + '">' +
             '</div>' +
             '<div class="nxtrunn-claim-field">' +
                 '<label>State</label>' +
-                '<input type="text" id="nxtrunn-edit-state" value="' + state + '">' +
+                '<input type="text" id="nxtrunn-edit-state" value="' + escapeAttr(state) + '">' +
             '</div>' +
             '<div class="nxtrunn-claim-field">' +
                 '<label>Meeting Location</label>' +
-                '<input type="text" id="nxtrunn-edit-meeting" value="' + meeting + '">' +
+                '<input type="text" id="nxtrunn-edit-meeting" value="' + escapeAttr(meeting) + '">' +
             '</div>' +
             '<div class="nxtrunn-claim-field">' +
                 '<label>Website</label>' +
-                '<input type="url" id="nxtrunn-edit-website" value="' + website + '" placeholder="https://">' +
+                '<input type="url" id="nxtrunn-edit-website" value="' + escapeAttr(website) + '" placeholder="https://">' +
             '</div>' +
             '<div class="nxtrunn-claim-field">' +
                 '<label>Instagram Handle</label>' +
-                '<input type="text" id="nxtrunn-edit-instagram" value="' + instagram + '" placeholder="@yourclub">' +
+                '<input type="text" id="nxtrunn-edit-instagram" value="' + escapeAttr(instagram) + '" placeholder="@yourclub">' +
             '</div>' +
             '<div class="nxtrunn-claim-field">' +
                 '<label>TikTok Handle</label>' +
-                '<input type="text" id="nxtrunn-edit-tiktok" value="' + tiktok + '" placeholder="@yourclub">' +
+                '<input type="text" id="nxtrunn-edit-tiktok" value="' + escapeAttr(tiktok) + '" placeholder="@yourclub">' +
             '</div>' +
             '<div class="nxtrunn-claim-field">' +
                 '<label>Strava Club URL</label>' +
-                '<input type="url" id="nxtrunn-edit-strava" value="' + strava + '" placeholder="https://strava.com/clubs/...">' +
+                '<input type="url" id="nxtrunn-edit-strava" value="' + escapeAttr(strava) + '" placeholder="https://strava.com/clubs/...">' +
             '</div>' +
             '<div class="nxtrunn-claim-field">' +
                 '<label>Club Logo</label>' +
