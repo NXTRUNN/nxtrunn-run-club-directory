@@ -343,8 +343,13 @@ class NXTRUNN_Import {
         $download_images = isset( $_POST['download_images'] ) && $_POST['download_images'] == '1';
 
         // Check if club already exists by title
-        $existing = get_page_by_title( $club['name'], OBJECT, 'run_club' );
-        if ( $existing ) {
+        $existing = new WP_Query( array(
+            'post_type'      => 'run_club',
+            'title'          => $club['name'],
+            'posts_per_page' => 1,
+            'fields'         => 'ids',
+        ) );
+        if ( $existing->have_posts() ) {
             wp_send_json_success( array( 'skipped' => true, 'message' => 'Already exists' ) );
         }
 
@@ -564,8 +569,13 @@ class NXTRUNN_Import {
         $as_draft = isset( $_POST['as_draft'] ) && $_POST['as_draft'] == '1';
 
         // Check if club already exists by title
-        $existing = get_page_by_title( $club['name'], OBJECT, 'run_club' );
-        if ( $existing ) {
+        $existing = new WP_Query( array(
+            'post_type'      => 'run_club',
+            'title'          => $club['name'],
+            'posts_per_page' => 1,
+            'fields'         => 'ids',
+        ) );
+        if ( $existing->have_posts() ) {
             wp_send_json_success( array( 'skipped' => true, 'message' => 'Already exists' ) );
         }
 

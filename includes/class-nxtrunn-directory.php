@@ -61,6 +61,10 @@ class NXTRUNN_Directory {
                         Near Me
                     </button>
 
+                    <button class="nxtrunn-filter-pill" id="nxtrunn-pace-pill" role="tab" aria-selected="false">
+                        My Pace
+                    </button>
+
                     <button class="nxtrunn-filter-pill" data-filter="badge" data-badge="woman_owned" role="tab" aria-selected="false">
                         Woman-Owned
                     </button>
@@ -80,6 +84,11 @@ class NXTRUNN_Directory {
             <!-- Club Cards Grid -->
             <div class="nxtrunn-directory-grid-new">
                 <!-- Clubs loaded via AJAX -->
+            </div>
+
+            <!-- Load More Button -->
+            <div class="nxtrunn-load-more-wrap" style="text-align: center; padding: 24px 0;">
+                <button class="nxtrunn-load-more-btn" style="display: none;">Load More</button>
             </div>
 
             <!-- Empty State -->
@@ -136,6 +145,48 @@ class NXTRUNN_Directory {
                             Go to Submission Form
                         </a>
                         <button class="nxtrunn-cancel-btn" id="nxtrunn-cancel-add-modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pace Filter Modal -->
+        <div class="nxtrunn-modal-backdrop" id="nxtrunn-pace-modal" role="dialog" aria-modal="true" aria-label="Find my pace group" style="display: none;">
+            <div class="nxtrunn-modal-content" style="max-width: 400px;">
+                <div class="nxtrunn-modal-drag-handle"></div>
+                <button class="nxtrunn-modal-close" id="nxtrunn-pace-close" aria-label="Close modal">
+                    <svg fill="none" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+                <div class="nxtrunn-modal-body" style="padding-top: 32px;">
+                    <div class="nxtrunn-pace-header">
+                        <h3 style="margin: 0 0 4px 0; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.5px;">Find My Pace Group</h3>
+                        <div class="nxtrunn-units-toggle">
+                            <button class="nxtrunn-unit-btn active" data-unit="mi">mi</button>
+                            <button class="nxtrunn-unit-btn" data-unit="km">km</button>
+                        </div>
+                    </div>
+
+                    <div class="nxtrunn-pace-display" style="text-align: center; margin: 20px 0 8px;">
+                        <span id="nxtrunn-pace-label" style="font-size: 24px; font-weight: 700; color: var(--color-text-primary);">9:00 - 12:00</span>
+                        <span id="nxtrunn-pace-unit-label" style="font-size: 14px; color: var(--color-text-secondary); display: block;">min/mi</span>
+                    </div>
+
+                    <div class="nxtrunn-pace-sliders" style="padding: 16px 8px;">
+                        <label style="font-size: 12px; color: var(--color-text-secondary);">Slowest pace I want</label>
+                        <input type="range" id="nxtrunn-pace-min" min="300" max="1800" step="30" value="540" style="width: 100%;">
+                        <label style="font-size: 12px; color: var(--color-text-secondary);">Fastest pace I want</label>
+                        <input type="range" id="nxtrunn-pace-max" min="300" max="1800" step="30" value="720" style="width: 100%;">
+                    </div>
+
+                    <div style="text-align: center; margin: 12px 0;">
+                        <button class="nxtrunn-walker-btn" id="nxtrunn-walker-btn">I'm a walker</button>
+                    </div>
+
+                    <div class="nxtrunn-modal-actions" style="flex-direction: row; gap: 12px; margin-top: 16px;">
+                        <button class="nxtrunn-cancel-btn" id="nxtrunn-pace-clear" style="flex:1;">Clear</button>
+                        <button class="nxtrunn-submit-link" id="nxtrunn-pace-apply" style="flex:1; text-align:center;">Show Clubs</button>
                     </div>
                 </div>
             </div>

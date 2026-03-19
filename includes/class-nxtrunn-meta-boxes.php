@@ -40,6 +40,26 @@ class NXTRUNN_Meta_Boxes {
             'normal',
             'default'
         );
+
+        // Pace & Accessibility meta box
+        add_meta_box(
+            'nxtrunn_pace',
+            'Pace & Accessibility',
+            array( $this, 'pace_meta_box_callback' ),
+            'run_club',
+            'side',
+            'default'
+        );
+
+        // Outreach & Contact meta box
+        add_meta_box(
+            'nxtrunn_outreach',
+            'Outreach & Contact',
+            array( $this, 'outreach_meta_box_callback' ),
+            'run_club',
+            'side',
+            'default'
+        );
     }
     
     public function location_meta_box_callback( $post ) {
@@ -249,6 +269,12 @@ class NXTRUNN_Meta_Boxes {
             }
         }
         
+        // Save pace meta
+        $this->save_pace_meta( $post_id );
+
+        // Save outreach meta
+        $this->save_outreach_meta( $post_id );
+
         // Geocode if location changed
         if ( isset( $_POST['nxtrunn_city'] ) && isset( $_POST['nxtrunn_country'] ) ) {
             $this->geocode_location( $post_id );
@@ -274,6 +300,140 @@ class NXTRUNN_Meta_Boxes {
         }
     }
     
+    /**
+     * Pace & Accessibility metabox
+     */
+    public function pace_meta_box_callback( $post ) {
+        wp_nonce_field( 'nxtrunn_pace_nonce', 'nxtrunn_pace_nonce_field' );
+
+        $pace_min    = get_post_meta( $post->ID, '_nxtrunn_pace_min', true );
+        $pace_max    = get_post_meta( $post->ID, '_nxtrunn_pace_max', true );
+        $walker      = get_post_meta( $post->ID, '_nxtrunn_walker_friendly', true );
+        $pace_source = get_post_meta( $post->ID, '_nxtrunn_pace_source', true );
+
+        // Convert seconds to mm:ss for display
+        $min_display = $pace_min ? sprintf( '%d:%02d', floor( $pace_min / 60 ), $pace_min % 60 ) : '';
+        $max_display = $pace_max ? sprintf( '%d:%02d', floor( $pace_max / 60 ), $pace_max % 60 ) : '';
+        ?>
+        <p>
+            <label><strong>Min Pace (mm:ss /mi)</strong></label><br>
+            <input type="text" name="nxtrunn_pace_min_display" value="<?php echo esc_attr( $min_display ); ?>"
+                   placeholder="e.g. 09:00" style="width:100%;">
+        </p>
+        <p>
+            <label><strong>Max Pace (mm:ss /mi)</strong></label><br>
+            <input type="text" name="nxtrunn_pace_max_display" value="<?php echo esc_attr( $max_display ); ?>"
+                   placeholder="e.g. 14:00" style="width:100%;">
+        </p>
+        <p>
+            <label>
+                <input type="checkbox" name="nxtrunn_walker_friendly" value="1" <?php checked( $walker, '1' ); ?>>
+                Walker Friendly
+            </label>
+        </p>
+        <?php if ( $pace_source ) : ?>
+        <p style="font-size:11px;color:#888;">Source: <?php echo esc_html( $pace_source ); ?></p>
+        <?php endif; ?>
+        <?php
+    }
+
+    /**
+     * Save pace meta
+     */
+    private function save_pace_meta( $post_id ) {
+        if ( ! isset( $_POST['nxtrunn_pace_nonce_field'] ) ||
+             ! wp_verify_nonce( $_POST['nxtrunn_pace_nonce_field'], 'nxtrunn_pace_nonce' ) ) {
+            return;
+        }
+
+        // Convert mm:ss to seconds
+        $to_seconds = function( $str ) {
+            $parts = explode( ':', trim( $str ) );
+            if ( count( $parts ) !== 2 ) return 0;
+            return ( absint( $parts[0] ) * 60 ) + absint( $parts[1] );
+        };
+
+        $min = $to_seconds( $_POST['nxtrunn_pace_min_display'] ?? '' );
+        $max = $to_seconds( $_POST['nxtrunn_pace_max_display'] ?? '' );
+
+        if ( $min ) update_post_meta( $post_id, '_nxtrunn_pace_min', $min );
+        else delete_post_meta( $post_id, '_nxtrunn_pace_min' );
+
+        if ( $max ) update_post_meta( $post_id, '_nxtrunn_pace_max', $max );
+        else delete_post_meta( $post_id, '_nxtrunn_pace_max' );
+
+        $walker = isset( $_POST['nxtrunn_walker_friendly'] ) ? '1' : '0';
+        update_post_meta( $post_id, '_nxtrunn_walker_friendly', $walker );
+        update_post_meta( $post_id, '_nxtrunn_pace_source', 'owner' );
+    }
+
+    /**
+     * Outreach & Contact metabox
+     */
+    public function outreach_meta_box_callback( $post ) {
+        wp_nonce_field( 'nxtrunn_outreach_nonce', 'nxtrunn_outreach_nonce_field' );
+
+        $email       = get_post_meta( $post->ID, '_nxtrunn_outreach_email', true );
+        $sent        = get_post_meta( $post->ID, '_nxtrunn_outreach_sent', true );
+        $followup    = get_post_meta( $post->ID, '_nxtrunn_followup_sent', true );
+        $claimed     = get_post_meta( $post->ID, '_nxtrunn_claimed', true ) === '1';
+        $source      = get_post_meta( $post->ID, '_nxtrunn_claim_source', true );
+
+        $status = 'No email saved';
+        if ( $claimed ) {
+            $status = 'Claimed';
+            if ( $source ) $status .= ' (' . esc_html( $source ) . ')';
+        } elseif ( $followup ) {
+            $status = 'Follow-up sent ' . date( 'M j, Y', $followup );
+        } elseif ( $sent ) {
+            $status = 'Outreach sent ' . date( 'M j, Y', $sent );
+        }
+        ?>
+        <p>
+            <label for="nxtrunn_outreach_email"><strong>Contact Email</strong></label><br>
+            <input type="email" id="nxtrunn_outreach_email" name="nxtrunn_outreach_email"
+                   value="<?php echo esc_attr( $email ); ?>" style="width:100%;">
+        </p>
+        <p style="color:#666;font-size:12px;">Status: <?php echo esc_html( $status ); ?></p>
+        <?php if ( $sent && ! $claimed ) : ?>
+        <p>
+            <button type="button" class="button" id="nxtrunn-resend-outreach"
+                    data-post="<?php echo $post->ID; ?>">Resend Outreach Email</button>
+            <span id="nxtrunn-resend-result" style="margin-left:8px;font-size:12px;"></span>
+        </p>
+        <?php endif; ?>
+        <?php
+    }
+
+    /**
+     * Save outreach meta — fires outreach email on first save
+     */
+    private function save_outreach_meta( $post_id ) {
+        if ( ! isset( $_POST['nxtrunn_outreach_nonce_field'] ) ||
+             ! wp_verify_nonce( $_POST['nxtrunn_outreach_nonce_field'], 'nxtrunn_outreach_nonce' ) ) {
+            return;
+        }
+
+        $new_email    = sanitize_email( $_POST['nxtrunn_outreach_email'] ?? '' );
+        $old_email    = get_post_meta( $post_id, '_nxtrunn_outreach_email', true );
+        $already_sent = get_post_meta( $post_id, '_nxtrunn_outreach_sent', true );
+
+        if ( $new_email ) {
+            update_post_meta( $post_id, '_nxtrunn_outreach_email', $new_email );
+
+            // Fire outreach email only on FIRST time email is added
+            if ( ! $already_sent && empty( $old_email ) ) {
+                NXTRUNN_Outreach_Emails::send_outreach( $post_id, $new_email );
+                update_post_meta( $post_id, '_nxtrunn_outreach_sent', time() );
+
+                // Schedule follow-up for 7 days later
+                if ( ! wp_next_scheduled( 'nxtrunn_send_followup_email', array( $post_id ) ) ) {
+                    wp_schedule_single_event( time() + ( 7 * DAY_IN_SECONDS ), 'nxtrunn_send_followup_email', array( $post_id ) );
+                }
+            }
+        }
+    }
+
     private function get_countries() {
         return array(
             'US' => 'United States',

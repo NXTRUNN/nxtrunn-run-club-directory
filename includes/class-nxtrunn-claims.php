@@ -63,6 +63,9 @@ class NXTRUNN_Claims {
         update_post_meta( $club_id, '_nxtrunn_claim_pending_email', $club_email );
         update_post_meta( $club_id, '_nxtrunn_claim_pending_role', $role );
 
+        // Track when claim was initiated
+        update_post_meta( $club_id, '_nxtrunn_claim_initiated', time() );
+
         // Send verification email to club email
         $club_name = $club->post_title;
         $subject = 'NXTRUNN — Verify Your Run Club: ' . $club_name;
@@ -151,6 +154,11 @@ class NXTRUNN_Claims {
 
         // Update club contact email to the verified club email
         update_post_meta( $club_id, '_nxtrunn_contact_email', $club_email );
+
+        // Track claim source — outreach if we sent them an email, organic otherwise
+        $outreach_sent = get_post_meta( $club_id, '_nxtrunn_outreach_sent', true );
+        $source = $outreach_sent ? 'outreach' : 'organic';
+        update_post_meta( $club_id, '_nxtrunn_claim_source', $source );
 
         // Clean up pending claim data
         $this->clear_pending_claim( $club_id );

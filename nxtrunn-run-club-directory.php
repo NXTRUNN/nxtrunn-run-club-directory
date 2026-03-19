@@ -3,7 +3,7 @@
  * Plugin Name:       NXTRUNN Run Club Directory
  * Plugin URI:        https://nxtrunn.com
  * Description:       A comprehensive run club directory with diversity badges, worldwide location search, and admin approval workflow.
- * Version:           1.5.4
+ * Version:           1.6.0
  * Author:            NXTRUNN
  * Author URI:        https://nxtrunn.com
  * License:           GPL-2.0+
@@ -20,7 +20,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Plugin version
-define( 'NXTRUNN_VERSION', '1.5.4' );
+define( 'NXTRUNN_VERSION', '1.6.0' );
 define( 'NXTRUNN_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'NXTRUNN_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'NXTRUNN_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -59,6 +59,7 @@ function run_nxtrunn_run_club() {
     require_once NXTRUNN_PLUGIN_DIR . 'includes/class-nxtrunn-email-notifications.php';
     require_once NXTRUNN_PLUGIN_DIR . 'includes/class-nxtrunn-ajax-handlers.php';
     require_once NXTRUNN_PLUGIN_DIR . 'includes/class-nxtrunn-claims.php';
+    require_once NXTRUNN_PLUGIN_DIR . 'includes/class-nxtrunn-outreach-emails.php';
     require_once NXTRUNN_PLUGIN_DIR . 'includes/class-nxtrunn-directory.php';
     
     // Admin classes
@@ -101,6 +102,169 @@ function run_nxtrunn_run_club() {
     add_action( 'admin_enqueue_scripts', 'nxtrunn_enqueue_admin_assets' );
 }
 add_action( 'plugins_loaded', 'run_nxtrunn_run_club' );
+
+/**
+ * One-time migration: consolidate legacy sponsor meta keys to _nxtrunn_sponsor
+ * Runs once per version bump via option flag.
+ */
+function nxtrunn_migrate_sponsor_meta() {
+    if ( get_option( 'nxtrunn_sponsor_migrated' ) === '1' ) {
+        return;
+    }
+
+    global $wpdb;
+
+    // Copy _nxtrunn_club_sponsor → _nxtrunn_sponsor where _nxtrunn_sponsor is empty
+    $wpdb->query("
+        INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value)
+        SELECT pm.post_id, '_nxtrunn_sponsor', pm.meta_value
+        FROM {$wpdb->postmeta} pm
+        LEFT JOIN {$wpdb->postmeta} existing
+            ON existing.post_id = pm.post_id AND existing.meta_key = '_nxtrunn_sponsor'
+        WHERE pm.meta_key = '_nxtrunn_club_sponsor'
+            AND pm.meta_value != ''
+            AND (existing.meta_value IS NULL OR existing.meta_value = '')
+    ");
+
+    // Copy club_sponsor → _nxtrunn_sponsor where _nxtrunn_sponsor is still empty
+    $wpdb->query("
+        INSERT INTO {$wpdb->postmeta} (post_id, meta_key, meta_value)
+        SELECT pm.post_id, '_nxtrunn_sponsor', pm.meta_value
+        FROM {$wpdb->postmeta} pm
+        LEFT JOIN {$wpdb->postmeta} existing
+            ON existing.post_id = pm.post_id AND existing.meta_key = '_nxtrunn_sponsor'
+        WHERE pm.meta_key = 'club_sponsor'
+            AND pm.meta_value != ''
+            AND (existing.meta_value IS NULL OR existing.meta_value = '')
+    ");
+
+    // Clean up legacy keys
+    $wpdb->query("DELETE FROM {$wpdb->postmeta} WHERE meta_key IN ('_nxtrunn_club_sponsor', 'club_sponsor')");
+
+    update_option( 'nxtrunn_sponsor_migrated', '1' );
+}
+add_action( 'admin_init', 'nxtrunn_migrate_sponsor_meta' );
+
+/**
+ * WP-Cron: Send Day-7 follow-up email
+ */
+add_action( 'nxtrunn_send_followup_email', 'nxtrunn_handle_followup_email' );
+function nxtrunn_handle_followup_email( $post_id ) {
+    if ( class_exists( 'NXTRUNN_Outreach_Emails' ) ) {
+        NXTRUNN_Outreach_Emails::send_followup( $post_id );
+    }
+}
+
+/**
+ * AJAX: Resend outreach email
+ */
+add_action( 'wp_ajax_nxtrunn_resend_outreach', 'nxtrunn_handle_resend_outreach' );
+function nxtrunn_handle_resend_outreach() {
+    // Accept either the outreach nonce or the general admin nonce
+    if ( ! wp_verify_nonce( $_POST['nonce'] ?? '', 'nxtrunn_outreach_nonce' ) &&
+         ! wp_verify_nonce( $_POST['nonce'] ?? '', 'nxtrunn_nonce' ) ) {
+        wp_die( 'Security check failed' );
+    }
+    if ( ! current_user_can( 'edit_posts' ) ) wp_die();
+
+    $post_id = intval( $_POST['post_id'] ?? 0 );
+    $email   = get_post_meta( $post_id, '_nxtrunn_outreach_email', true );
+
+    if ( ! $email ) {
+        wp_send_json_error( 'No email on file' );
+    }
+
+    NXTRUNN_Outreach_Emails::send_outreach( $post_id, $email );
+    update_post_meta( $post_id, '_nxtrunn_outreach_sent', time() );
+
+    wp_send_json_success( 'Email resent at ' . date( 'M j, Y g:i a' ) );
+}
+
+/**
+ * AJAX: Migrate pace data from taxonomy terms to meta fields
+ * Maps run_pace taxonomy terms to _nxtrunn_pace_min / _nxtrunn_pace_max meta
+ */
+add_action( 'wp_ajax_nxtrunn_migrate_pace', 'nxtrunn_handle_pace_migration' );
+function nxtrunn_handle_pace_migration() {
+    if ( ! current_user_can( 'manage_options' ) ) wp_die();
+    check_ajax_referer( 'nxtrunn_nonce', 'nonce' );
+
+    // Pace term → seconds mapping
+    $pace_map = array(
+        'All Paces'               => array( 'min' => 300, 'max' => 1800, 'walker' => '1' ),
+        'Casual (12+ min/mile)'   => array( 'min' => 720, 'max' => 1800, 'walker' => '1' ),
+        'Moderate (9-12 min/mile)'=> array( 'min' => 540, 'max' => 720,  'walker' => '0' ),
+        'Fast (<9 min/mile)'      => array( 'min' => 300, 'max' => 540,  'walker' => '0' ),
+    );
+
+    $clubs = get_posts( array(
+        'post_type'      => 'run_club',
+        'post_status'    => 'publish',
+        'posts_per_page' => -1,
+        'fields'         => 'ids',
+    ) );
+
+    $migrated = 0;
+    $skipped  = 0;
+
+    foreach ( $clubs as $club_id ) {
+        // Skip clubs that already have pace meta set by an owner
+        $existing_source = get_post_meta( $club_id, '_nxtrunn_pace_source', true );
+        if ( $existing_source === 'owner' ) {
+            $skipped++;
+            continue;
+        }
+
+        $terms = wp_get_post_terms( $club_id, 'run_pace', array( 'fields' => 'names' ) );
+        if ( is_wp_error( $terms ) || empty( $terms ) ) {
+            continue;
+        }
+
+        // Use the most specific term (Fast > Moderate > Casual > All Paces)
+        $best = null;
+        $priority = array( 'Fast (<9 min/mile)' => 4, 'Moderate (9-12 min/mile)' => 3, 'Casual (12+ min/mile)' => 2, 'All Paces' => 1 );
+
+        foreach ( $terms as $term_name ) {
+            if ( isset( $pace_map[ $term_name ] ) ) {
+                $p = $priority[ $term_name ] ?? 0;
+                if ( $best === null || $p > $priority[ $best ] ) {
+                    $best = $term_name;
+                }
+            }
+        }
+
+        // If multiple terms, widen the range (e.g., Casual + Moderate = 540-1800)
+        if ( count( $terms ) > 1 ) {
+            $min_val = 1800;
+            $max_val = 300;
+            $has_walker = false;
+            foreach ( $terms as $term_name ) {
+                if ( isset( $pace_map[ $term_name ] ) ) {
+                    $min_val = min( $min_val, $pace_map[ $term_name ]['min'] );
+                    $max_val = max( $max_val, $pace_map[ $term_name ]['max'] );
+                    if ( $pace_map[ $term_name ]['walker'] === '1' ) $has_walker = true;
+                }
+            }
+            update_post_meta( $club_id, '_nxtrunn_pace_min', $min_val );
+            update_post_meta( $club_id, '_nxtrunn_pace_max', $max_val );
+            update_post_meta( $club_id, '_nxtrunn_walker_friendly', $has_walker ? '1' : '0' );
+            update_post_meta( $club_id, '_nxtrunn_pace_source', 'migration' );
+            $migrated++;
+        } elseif ( $best && isset( $pace_map[ $best ] ) ) {
+            update_post_meta( $club_id, '_nxtrunn_pace_min', $pace_map[ $best ]['min'] );
+            update_post_meta( $club_id, '_nxtrunn_pace_max', $pace_map[ $best ]['max'] );
+            update_post_meta( $club_id, '_nxtrunn_walker_friendly', $pace_map[ $best ]['walker'] );
+            update_post_meta( $club_id, '_nxtrunn_pace_source', 'migration' );
+            $migrated++;
+        }
+    }
+
+    wp_send_json_success( array(
+        'migrated' => $migrated,
+        'skipped'  => $skipped,
+        'total'    => count( $clubs ),
+    ) );
+}
 
 /**
  * Enqueue public assets

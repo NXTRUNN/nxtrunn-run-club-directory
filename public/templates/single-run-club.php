@@ -155,7 +155,7 @@ while ( have_posts() ) : the_post();
     <div class="nxtrunn-single-club-wrapper" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
         
         <div class="nxtrunn-back-link">
-            <a href="<?php echo esc_url( $directory_url ); ?>" style="color: #8f657c; text-decoration: none; font-weight: 600;">
+            <a href="<?php echo esc_url( $directory_url ); ?>" style="color: var(--color-primary, #7C5A78); text-decoration: none; font-weight: 600;">
                 ← Back to Directory
             </a>
         </div>
@@ -194,7 +194,7 @@ while ( have_posts() ) : the_post();
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
                 
                 <div>
-                    <h3 style="margin: 0 0 15px 0; color: #8f657c;">Club Details</h3>
+                    <h3 style="margin: 0 0 15px 0; color: var(--color-primary, #7C5A78);">Club Details</h3>
                     
                     <?php
                     $pace_terms = wp_get_post_terms( $club_id, 'run_pace' );
@@ -227,11 +227,11 @@ while ( have_posts() ) : the_post();
                 </div>
                 
                 <div>
-                    <h3 style="margin: 0 0 15px 0; color: #8f657c;">Connect</h3>
+                    <h3 style="margin: 0 0 15px 0; color: var(--color-primary, #7C5A78);">Connect</h3>
                     
                     <?php if ( $website ) : ?>
                     <p style="margin-bottom: 10px;">
-                        <a href="<?php echo esc_url( $website ); ?>" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 10px 20px; background: #8f657c; color: white; text-decoration: none; border-radius: 6px;">
+                        <a href="<?php echo esc_url( $website ); ?>" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 10px 20px; background: var(--color-primary, #7C5A78); color: white; text-decoration: none; border-radius: 6px;">
                             🌐 Visit Website
                         </a>
                     </p>
@@ -239,7 +239,7 @@ while ( have_posts() ) : the_post();
                     
                     <?php if ( $instagram ) : ?>
                     <p style="margin-bottom: 10px;">
-                        <a href="https://instagram.com/<?php echo esc_attr( ltrim( $instagram, '@' ) ); ?>" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 10px 20px; background: #8f657c; color: white; text-decoration: none; border-radius: 6px;">
+                        <a href="https://instagram.com/<?php echo esc_attr( ltrim( $instagram, '@' ) ); ?>" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 10px 20px; background: var(--color-primary, #7C5A78); color: white; text-decoration: none; border-radius: 6px;">
                             📸 Follow on Instagram
                         </a>
                     </p>

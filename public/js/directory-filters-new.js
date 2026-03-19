@@ -14,6 +14,11 @@
         userLng: null
     };
 
+    let currentPage = 1;
+    let totalPages = 1;
+    let isLoadingMore = false;
+    var CLUBS_PER_PAGE = 24;
+
     // Initialize directory
     function initDirectory() {
         $('.nxtrunn-filter-pill[data-filter="all"]').addClass('active').attr('aria-selected', 'true');
@@ -137,6 +142,11 @@
             clearAllFilters();
         });
 
+        // Load More
+        $(document).on('click', '.nxtrunn-load-more-btn', function() {
+            loadMoreClubs();
+        });
+
         // Add club modal
         $('#nxtrunn-add-club-btn').on('click', function() {
             openModal('#nxtrunn-add-club-modal');
@@ -179,32 +189,22 @@
         $('body').css('overflow', '');
     }
 
-    // Load clubs via AJAX
+    // Load clubs via AJAX (resets to page 1)
     function loadClubs() {
+        currentPage = 1;
         showLoading();
-
-        var actualFilters = {
-            action: 'nxtrunn_filter_directory',
-            nonce: nxtrunn_ajax.nonce,
-            search: currentFilters.search || '',
-            state: currentFilters.state || null,
-            pace: currentFilters.pace || null,
-            vibe: currentFilters.vibe || null,
-            days: currentFilters.days || null,
-            woman_run: currentFilters.woman_owned ? 1 : 0,
-            bipoc_owned: currentFilters.bipoc_owned ? 1 : 0,
-            per_page: -1
-        };
 
         $.ajax({
             url: nxtrunn_ajax.ajax_url,
             type: 'POST',
-            data: actualFilters,
+            data: buildFilterData(1),
             success: function(response) {
                 hideLoading();
                 if (response.success) {
                     renderClubs(response.data.clubs);
+                    totalPages = response.data.pages || 1;
                     updateResultsCount(response.data.total);
+                    updateLoadMoreButton();
                 } else {
                     showError();
                 }
@@ -214,6 +214,62 @@
                 showError();
             }
         });
+    }
+
+    // Load next page of clubs (append)
+    function loadMoreClubs() {
+        if (isLoadingMore || currentPage >= totalPages) return;
+        isLoadingMore = true;
+        currentPage++;
+
+        var $btn = $('.nxtrunn-load-more-btn');
+        $btn.prop('disabled', true).text('Loading...');
+
+        $.ajax({
+            url: nxtrunn_ajax.ajax_url,
+            type: 'POST',
+            data: buildFilterData(currentPage),
+            success: function(response) {
+                isLoadingMore = false;
+                if (response.success && response.data.clubs.length > 0) {
+                    appendClubs(response.data.clubs);
+                }
+                updateLoadMoreButton();
+                $btn.prop('disabled', false).text('Load More');
+            },
+            error: function() {
+                isLoadingMore = false;
+                currentPage--;
+                $btn.prop('disabled', false).text('Load More');
+            }
+        });
+    }
+
+    // Build filter params for AJAX
+    function buildFilterData(page) {
+        return {
+            action: 'nxtrunn_filter_directory',
+            nonce: nxtrunn_ajax.nonce,
+            search: currentFilters.search || '',
+            state: currentFilters.state || null,
+            pace: currentFilters.pace || null,
+            vibe: currentFilters.vibe || null,
+            days: currentFilters.days || null,
+            woman_run: currentFilters.woman_owned ? 1 : 0,
+            bipoc_owned: currentFilters.bipoc_owned ? 1 : 0,
+            per_page: CLUBS_PER_PAGE,
+            page: page
+        };
+    }
+
+    // Show/hide Load More button
+    function updateLoadMoreButton() {
+        var $btn = $('.nxtrunn-load-more-btn');
+        if (currentPage < totalPages) {
+            $btn.show();
+        } else {
+            $btn.hide();
+        }
     }
 
     // Load nearby clubs
@@ -228,7 +284,7 @@
                 nonce: nxtrunn_ajax.nonce,
                 lat: currentFilters.userLat,
                 lng: currentFilters.userLng,
-                radius: 25,
+                radius: 0,
                 unit: 'mi'
             },
             success: function(response) {
@@ -247,7 +303,7 @@
         });
     }
 
-    // Render clubs
+    // Render clubs (replaces grid)
     function renderClubs(clubs) {
         var $grid = $('.nxtrunn-directory-grid-new');
         var $empty = $('.nxtrunn-empty-state');
@@ -261,6 +317,15 @@
         $empty.hide();
         $grid.empty();
 
+        clubs.forEach(function(club) {
+            var card = createClubCard(club);
+            $grid.append(card);
+        });
+    }
+
+    // Append clubs (for Load More)
+    function appendClubs(clubs) {
+        var $grid = $('.nxtrunn-directory-grid-new');
         clubs.forEach(function(club) {
             var card = createClubCard(club);
             $grid.append(card);
@@ -623,6 +688,124 @@
     function showError() {
         $('.nxtrunn-directory-grid-new').html('<p style="text-align:center;padding:48px;color:var(--color-text-secondary);">Unable to load clubs. Please try again.</p>');
     }
+
+    // ========================================
+    // PACE FILTER
+    // ========================================
+
+    var paceActive = false;
+    var paceUnit = 'mi';
+
+    function secToDisplay(sec) {
+        var mins = Math.floor(sec / 60);
+        var secs = sec % 60;
+        return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+    }
+
+    function secToKm(sec) {
+        // Convert min/mile to min/km (multiply by 0.621371)
+        var kmSec = Math.round(sec * 0.621371);
+        var mins = Math.floor(kmSec / 60);
+        var secs = kmSec % 60;
+        return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+    }
+
+    function updatePaceDisplay() {
+        var minVal = parseInt($('#nxtrunn-pace-min').val());
+        var maxVal = parseInt($('#nxtrunn-pace-max').val());
+
+        // Ensure min <= max
+        if (minVal > maxVal) {
+            $('#nxtrunn-pace-max').val(minVal);
+            maxVal = minVal;
+        }
+
+        if (paceUnit === 'mi') {
+            $('#nxtrunn-pace-label').text(secToDisplay(minVal) + ' - ' + secToDisplay(maxVal));
+            $('#nxtrunn-pace-unit-label').text('min/mi');
+        } else {
+            $('#nxtrunn-pace-label').text(secToKm(minVal) + ' - ' + secToKm(maxVal));
+            $('#nxtrunn-pace-unit-label').text('min/km');
+        }
+    }
+
+    // Open pace modal
+    $('#nxtrunn-pace-pill').on('click', function() {
+        if (paceActive) {
+            // If pace is active and user clicks again, open modal to adjust
+            openModal('#nxtrunn-pace-modal');
+        } else {
+            openModal('#nxtrunn-pace-modal');
+        }
+    });
+
+    // Close pace modal
+    $('#nxtrunn-pace-close').on('click', function() {
+        closeModal('#nxtrunn-pace-modal');
+    });
+
+    // Unit toggle
+    $(document).on('click', '.nxtrunn-unit-btn', function() {
+        $('.nxtrunn-unit-btn').removeClass('active');
+        $(this).addClass('active');
+        paceUnit = $(this).data('unit');
+        updatePaceDisplay();
+    });
+
+    // Slider changes
+    $(document).on('input', '#nxtrunn-pace-min, #nxtrunn-pace-max', function() {
+        updatePaceDisplay();
+    });
+
+    // Walker toggle
+    $(document).on('click', '#nxtrunn-walker-btn', function() {
+        var isActive = $(this).toggleClass('active').hasClass('active');
+        if (isActive) {
+            $('#nxtrunn-pace-min').val(1200); // 20:00
+            $('#nxtrunn-pace-max').val(1800); // 30:00
+            updatePaceDisplay();
+        }
+    });
+
+    // Apply pace filter
+    $(document).on('click', '#nxtrunn-pace-apply', function() {
+        paceActive = true;
+        currentFilters.pace_min = parseInt($('#nxtrunn-pace-min').val());
+        currentFilters.pace_max = parseInt($('#nxtrunn-pace-max').val());
+        currentFilters.walker_only = $('#nxtrunn-walker-btn').hasClass('active') ? 1 : 0;
+
+        // Update pill appearance
+        var $pill = $('#nxtrunn-pace-pill');
+        var label = secToDisplay(currentFilters.pace_min) + ' - ' + secToDisplay(currentFilters.pace_max);
+        $pill.addClass('active').attr('aria-selected', 'true').text(label);
+        $('.nxtrunn-filter-pill[data-filter="all"]').removeClass('active').attr('aria-selected', 'false');
+
+        closeModal('#nxtrunn-pace-modal');
+        loadClubs();
+    });
+
+    // Clear pace filter
+    $(document).on('click', '#nxtrunn-pace-clear', function() {
+        paceActive = false;
+        delete currentFilters.pace_min;
+        delete currentFilters.pace_max;
+        delete currentFilters.walker_only;
+
+        $('#nxtrunn-pace-pill').removeClass('active').attr('aria-selected', 'false').text('My Pace');
+        $('#nxtrunn-walker-btn').removeClass('active');
+        $('#nxtrunn-pace-min').val(540);
+        $('#nxtrunn-pace-max').val(720);
+        updatePaceDisplay();
+
+        closeModal('#nxtrunn-pace-modal');
+
+        // Restore All Clubs if no other filters active
+        if (!currentFilters.woman_owned && !currentFilters.bipoc_owned && !currentFilters.nearMe) {
+            $('.nxtrunn-filter-pill[data-filter="all"]').addClass('active').attr('aria-selected', 'true');
+        }
+
+        loadClubs();
+    });
 
     // ========================================
     // CLAIM CLUB FUNCTIONS

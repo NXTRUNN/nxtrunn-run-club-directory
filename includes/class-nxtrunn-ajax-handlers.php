@@ -35,7 +35,7 @@ class NXTRUNN_AJAX_Handlers {
         $data = $this->format_club_data( $club_id );
         $data['content'] = apply_filters( 'the_content', $club->post_content );
         $data['meta']['meeting_location'] = get_post_meta( $club_id, '_nxtrunn_meeting_location', true );
-        $data['meta']['sponsor'] = get_post_meta( $club_id, '_nxtrunn_club_sponsor', true ) ?: get_post_meta( $club_id, '_nxtrunn_sponsor', true ) ?: get_post_meta( $club_id, 'club_sponsor', true );
+        $data['meta']['sponsor'] = get_post_meta( $club_id, '_nxtrunn_sponsor', true );
         
         wp_send_json_success( $data );
     }
@@ -90,8 +90,9 @@ class NXTRUNN_AJAX_Handlers {
                     $club_lng,
                     $unit
                 );
-                
-                if ( $distance <= $radius ) {
+
+                // radius=0 means no cutoff — return all clubs ranked by distance
+                if ( $radius === 0 || $distance <= $radius ) {
                     $nearby_clubs[] = $this->format_club_data( $club->ID, $distance, $unit );
                 }
             }
@@ -118,7 +119,7 @@ class NXTRUNN_AJAX_Handlers {
         $args = array(
             'post_type' => 'run_club',
             'post_status' => 'publish',
-            'posts_per_page' => isset( $_POST['per_page'] ) ? intval( $_POST['per_page'] ) : -1,
+            'posts_per_page' => isset( $_POST['per_page'] ) ? intval( $_POST['per_page'] ) : 24,
             'paged' => isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1,
             'orderby' => 'title',
             'order' => 'ASC',
@@ -156,6 +157,34 @@ class NXTRUNN_AJAX_Handlers {
             );
         }
         
+        // Filter by pace (overlap logic: club min <= user max AND club max >= user min)
+        if ( ! empty( $_POST['pace_min'] ) || ! empty( $_POST['pace_max'] ) ) {
+            $user_min = isset( $_POST['pace_min'] ) ? intval( $_POST['pace_min'] ) : 300;
+            $user_max = isset( $_POST['pace_max'] ) ? intval( $_POST['pace_max'] ) : 1800;
+
+            $meta_query[] = array(
+                'key'     => '_nxtrunn_pace_min',
+                'value'   => $user_max,
+                'compare' => '<=',
+                'type'    => 'NUMERIC',
+            );
+            $meta_query[] = array(
+                'key'     => '_nxtrunn_pace_max',
+                'value'   => $user_min,
+                'compare' => '>=',
+                'type'    => 'NUMERIC',
+            );
+        }
+
+        // Filter by walker-friendly
+        if ( ! empty( $_POST['walker_only'] ) && $_POST['walker_only'] == '1' ) {
+            $meta_query[] = array(
+                'key'     => '_nxtrunn_walker_friendly',
+                'value'   => '1',
+                'compare' => '=',
+            );
+        }
+
         // Filter by badges - ONLY if explicitly set to 1/true
         if ( isset( $_POST['woman_run'] ) && $_POST['woman_run'] == '1' ) {
             $meta_query[] = array(
@@ -211,8 +240,7 @@ class NXTRUNN_AJAX_Handlers {
         }
         
         // Apply filter for custom modifications
-        // TEMPORARILY DISABLED to debug Wilpower issue
-        // $args = apply_filters( 'nxtrunn_runclub_directory_query_args', $args );
+        $args = apply_filters( 'nxtrunn_runclub_directory_query_args', $args );
         
         $query = new WP_Query( $args );
         $clubs = array();
@@ -262,13 +290,19 @@ class NXTRUNN_AJAX_Handlers {
                 'pace' => ! is_wp_error( $pace_terms ) ? $pace_terms : array(),
                 'vibe' => ! is_wp_error( $vibe_terms ) ? $vibe_terms : array(),
                 'days' => ! is_wp_error( $days_terms ) ? $days_terms : array(),
-                'sponsor' => get_post_meta( $post_id, '_nxtrunn_club_sponsor', true ) ?: get_post_meta( $post_id, '_nxtrunn_sponsor', true ) ?: get_post_meta( $post_id, 'club_sponsor', true ),
+                'sponsor' => get_post_meta( $post_id, '_nxtrunn_sponsor', true ),
             ),
             'contact' => array(
                 'website' => get_post_meta( $post_id, '_nxtrunn_website', true ),
                 'instagram' => get_post_meta( $post_id, '_nxtrunn_instagram', true ),
                 'tiktok' => get_post_meta( $post_id, '_nxtrunn_tiktok', true ),
                 'strava' => get_post_meta( $post_id, '_nxtrunn_strava', true ),
+            ),
+            'pace_data' => array(
+                'pace_min'         => intval( get_post_meta( $post_id, '_nxtrunn_pace_min', true ) ),
+                'pace_max'         => intval( get_post_meta( $post_id, '_nxtrunn_pace_max', true ) ),
+                'walker_friendly'  => get_post_meta( $post_id, '_nxtrunn_walker_friendly', true ) === '1',
+                'pace_source'      => get_post_meta( $post_id, '_nxtrunn_pace_source', true ),
             ),
             'claim' => array(
                 'claimed' => get_post_meta( $post_id, '_nxtrunn_claimed', true ) === '1',

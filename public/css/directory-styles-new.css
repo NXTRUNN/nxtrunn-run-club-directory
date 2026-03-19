@@ -974,7 +974,7 @@
     }
 
     .nxtrunn-filter-pills-container {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
         padding: 4px;
     }
 
@@ -1388,6 +1388,142 @@
 
 .nxtrunn-claim-signup a:hover {
     background: #4d7a5e;
+}
+
+/* ========================================
+   LOAD MORE BUTTON
+   ======================================== */
+.nxtrunn-load-more-btn {
+    display: inline-block;
+    padding: 12px 32px;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 9999px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.nxtrunn-load-more-btn:hover {
+    background: var(--color-surface-raised);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.nxtrunn-load-more-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* ========================================
+   PACE FILTER MODAL
+   ======================================== */
+.nxtrunn-pace-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nxtrunn-units-toggle {
+    display: flex;
+    background: var(--color-surface-raised);
+    border-radius: var(--radius-full);
+    padding: 2px;
+    gap: 2px;
+}
+
+.nxtrunn-unit-btn {
+    padding: 6px 14px;
+    border: none;
+    border-radius: var(--radius-full);
+    background: transparent;
+    color: var(--color-text-secondary);
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 32px;
+}
+
+.nxtrunn-unit-btn.active {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.nxtrunn-unit-btn:hover:not(.active) {
+    color: var(--color-primary-light);
+}
+
+/* Range slider styling */
+.nxtrunn-pace-sliders input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+    outline: none;
+    margin: 8px 0 16px;
+}
+
+.nxtrunn-pace-sliders input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    cursor: pointer;
+    border: 3px solid var(--color-surface);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.nxtrunn-pace-sliders input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    cursor: pointer;
+    border: 3px solid var(--color-surface);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* Walker button */
+.nxtrunn-walker-btn {
+    padding: 10px 24px;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 44px;
+}
+
+.nxtrunn-walker-btn:hover {
+    border-color: var(--color-primary-light);
+    color: var(--color-primary);
+}
+
+.nxtrunn-walker-btn.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+/* Pace pill active state */
+#nxtrunn-pace-pill.active {
+    background: var(--color-surface);
+    color: var(--color-primary);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 /* ========================================
