@@ -156,6 +156,56 @@ function nxtrunn_handle_followup_email( $post_id ) {
 }
 
 /**
+ * AJAX: Save outreach email only (no send)
+ */
+add_action( 'wp_ajax_nxtrunn_save_outreach_email', 'nxtrunn_handle_save_outreach_email' );
+function nxtrunn_handle_save_outreach_email() {
+    if ( ! wp_verify_nonce( $_POST['nonce'] ?? '', 'nxtrunn_outreach_nonce' ) ) {
+        wp_die( 'Security check failed' );
+    }
+    if ( ! current_user_can( 'edit_posts' ) ) wp_die();
+
+    $post_id = absint( $_POST['post_id'] ?? 0 );
+    $email   = sanitize_email( $_POST['email'] ?? '' );
+
+    if ( ! $post_id || ! $email ) {
+        wp_send_json_error( 'Invalid data' );
+    }
+
+    update_post_meta( $post_id, '_nxtrunn_outreach_email', $email );
+    wp_send_json_success( 'Email saved' );
+}
+
+/**
+ * AJAX: Save outreach email + send outreach in one step
+ */
+add_action( 'wp_ajax_nxtrunn_save_and_send_outreach', 'nxtrunn_handle_save_and_send_outreach' );
+function nxtrunn_handle_save_and_send_outreach() {
+    if ( ! wp_verify_nonce( $_POST['nonce'] ?? '', 'nxtrunn_outreach_nonce' ) ) {
+        wp_die( 'Security check failed' );
+    }
+    if ( ! current_user_can( 'edit_posts' ) ) wp_die();
+
+    $post_id = absint( $_POST['post_id'] ?? 0 );
+    $email   = sanitize_email( $_POST['email'] ?? '' );
+
+    if ( ! $post_id || ! $email ) {
+        wp_send_json_error( 'Invalid data' );
+    }
+
+    update_post_meta( $post_id, '_nxtrunn_outreach_email', $email );
+    NXTRUNN_Outreach_Emails::send_outreach( $post_id, $email );
+    update_post_meta( $post_id, '_nxtrunn_outreach_sent', time() );
+
+    // Schedule follow-up for 7 days later
+    if ( ! wp_next_scheduled( 'nxtrunn_send_followup_email', array( $post_id ) ) ) {
+        wp_schedule_single_event( time() + ( 7 * DAY_IN_SECONDS ), 'nxtrunn_send_followup_email', array( $post_id ) );
+    }
+
+    wp_send_json_success( 'Sent at ' . date( 'M j, Y g:i a' ) );
+}
+
+/**
  * AJAX: Resend outreach email
  */
 add_action( 'wp_ajax_nxtrunn_resend_outreach', 'nxtrunn_handle_resend_outreach' );

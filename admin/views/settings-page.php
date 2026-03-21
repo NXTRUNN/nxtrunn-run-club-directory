@@ -233,16 +233,18 @@ $tabs = array(
         <?php endforeach; ?>
     </div>
 
+    <?php $outreach_nonce = wp_create_nonce( 'nxtrunn_outreach_nonce' ); ?>
+
     <table class="wp-list-table widefat fixed striped">
         <thead>
             <tr>
-                <th>Club</th>
-                <th>Location</th>
-                <th>Email</th>
-                <th>Outreach</th>
-                <th>Claimed</th>
-                <th>Source</th>
-                <th>Status</th>
+                <th style="width:20%;">Club</th>
+                <th style="width:12%;">Location</th>
+                <th style="width:28%;">Email</th>
+                <th style="width:16%;">Action</th>
+                <th style="width:8%;">Sent</th>
+                <th style="width:8%;">Claimed</th>
+                <th style="width:8%;">Status</th>
             </tr>
         </thead>
         <tbody>
@@ -262,18 +264,135 @@ $tabs = array(
             elseif ( $email )  { $status = 'Has Email'; $scolor = '#4E6FA8'; }
             else               { $status = 'No Email'; $scolor = '#B5A8BA'; }
         ?>
-        <tr>
+        <tr data-club-id="<?php echo $club->ID; ?>">
             <td><a href="<?php echo get_edit_post_link( $club->ID ); ?>"><?php echo esc_html( $club->post_title ); ?></a></td>
             <td><?php echo esc_html( trim( "$city, $state", ', ' ) ); ?></td>
-            <td><?php echo $email ? esc_html( $email ) : '&mdash;'; ?></td>
+            <td>
+                <input type="email" class="nxtrunn-outreach-email-input"
+                       value="<?php echo esc_attr( $email ); ?>"
+                       placeholder="club@email.com"
+                       style="width:100%; padding:4px 8px; border:1px solid #E2DAE8; border-radius:6px; font-size:13px;"
+                       <?php echo $is_claimed ? 'disabled' : ''; ?>>
+            </td>
+            <td class="nxtrunn-outreach-actions">
+                <?php if ( $is_claimed ) : ?>
+                    <span style="color:#5E9070; font-size:12px;">Claimed</span>
+                <?php elseif ( $o_sent ) : ?>
+                    <button type="button" class="button button-small nxtrunn-outreach-resend">Resend</button>
+                    <span class="nxtrunn-outreach-msg" style="font-size:11px; margin-left:4px;"></span>
+                <?php else : ?>
+                    <button type="button" class="button button-small nxtrunn-outreach-save">Save</button>
+                    <button type="button" class="button button-small button-primary nxtrunn-outreach-send">Save & Send</button>
+                    <span class="nxtrunn-outreach-msg" style="font-size:11px; display:block; margin-top:4px;"></span>
+                <?php endif; ?>
+            </td>
             <td><?php echo $o_sent ? date( 'M j', $o_sent ) : '&mdash;'; ?></td>
             <td><?php echo $is_claimed ? 'Yes' : '&mdash;'; ?></td>
-            <td><?php echo $source ? ucfirst( $source ) : '&mdash;'; ?></td>
-            <td><span style="color:<?php echo $scolor; ?>; font-weight:600;"><?php echo $status; ?></span></td>
+            <td><span class="nxtrunn-outreach-status" style="color:<?php echo $scolor; ?>; font-weight:600;"><?php echo $status; ?></span></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
     </table>
+
+    <script>
+    jQuery(function($) {
+        var nonce = '<?php echo $outreach_nonce; ?>';
+
+        // Save email only (no send)
+        $('.nxtrunn-outreach-save').on('click', function() {
+            var $row = $(this).closest('tr');
+            var clubId = $row.data('club-id');
+            var email = $row.find('.nxtrunn-outreach-email-input').val().trim();
+            var $msg = $row.find('.nxtrunn-outreach-msg');
+
+            if (!email) { $msg.css('color', '#C86848').text('Enter an email first.'); return; }
+
+            $(this).prop('disabled', true).text('Saving...');
+            var $btn = $(this);
+
+            $.post(ajaxurl, {
+                action: 'nxtrunn_save_outreach_email',
+                nonce: nonce,
+                post_id: clubId,
+                email: email
+            }, function(resp) {
+                $btn.prop('disabled', false).text('Save');
+                if (resp.success) {
+                    $msg.css('color', '#5E9070').text('Saved!');
+                    $row.find('.nxtrunn-outreach-status').css('color', '#4E6FA8').text('Has Email');
+                } else {
+                    $msg.css('color', '#C86848').text(resp.data || 'Error');
+                }
+            }).fail(function() {
+                $btn.prop('disabled', false).text('Save');
+                $msg.css('color', '#C86848').text('Failed');
+            });
+        });
+
+        // Save + Send outreach
+        $('.nxtrunn-outreach-send').on('click', function() {
+            var $row = $(this).closest('tr');
+            var clubId = $row.data('club-id');
+            var email = $row.find('.nxtrunn-outreach-email-input').val().trim();
+            var $msg = $row.find('.nxtrunn-outreach-msg');
+
+            if (!email) { $msg.css('color', '#C86848').text('Enter an email first.'); return; }
+
+            $(this).prop('disabled', true).text('Sending...');
+            var $btn = $(this);
+
+            $.post(ajaxurl, {
+                action: 'nxtrunn_save_and_send_outreach',
+                nonce: nonce,
+                post_id: clubId,
+                email: email
+            }, function(resp) {
+                if (resp.success) {
+                    $msg.css('color', '#5E9070').text('Sent!');
+                    $row.find('.nxtrunn-outreach-status').css('color', '#C9903C').text('Sent');
+                    // Replace buttons with Resend
+                    $row.find('.nxtrunn-outreach-save, .nxtrunn-outreach-send').remove();
+                    $row.find('.nxtrunn-outreach-actions').prepend(
+                        '<button type="button" class="button button-small nxtrunn-outreach-resend">Resend</button> '
+                    );
+                } else {
+                    $btn.prop('disabled', false).text('Save & Send');
+                    $msg.css('color', '#C86848').text(resp.data || 'Error');
+                }
+            }).fail(function() {
+                $btn.prop('disabled', false).text('Save & Send');
+                $msg.css('color', '#C86848').text('Failed');
+            });
+        });
+
+        // Resend outreach
+        $(document).on('click', '.nxtrunn-outreach-resend', function() {
+            var $row = $(this).closest('tr');
+            var clubId = $row.data('club-id');
+            var email = $row.find('.nxtrunn-outreach-email-input').val().trim();
+            var $msg = $row.find('.nxtrunn-outreach-msg');
+            var $btn = $(this);
+
+            $btn.prop('disabled', true).text('Sending...');
+
+            $.post(ajaxurl, {
+                action: 'nxtrunn_resend_outreach',
+                nonce: nonce,
+                post_id: clubId
+            }, function(resp) {
+                $btn.prop('disabled', false).text('Resend');
+                if (resp.success) {
+                    $msg.css('color', '#5E9070').text('Resent!');
+                } else {
+                    $msg.css('color', '#C86848').text(resp.data || 'Error');
+                }
+            }).fail(function() {
+                $btn.prop('disabled', false).text('Resend');
+                $msg.css('color', '#C86848').text('Failed');
+            });
+        });
+    });
+    </script>
 
     <?php endif; ?>
 
