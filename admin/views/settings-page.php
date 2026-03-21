@@ -12,7 +12,7 @@ $tabs = array(
 
     <nav class="nav-tab-wrapper">
         <?php foreach ( $tabs as $slug => $label ) : ?>
-        <a href="?page=nxtrunn-settings&tab=<?php echo $slug; ?>"
+        <a href="?post_type=run_club&page=nxtrunn-settings&tab=<?php echo $slug; ?>"
            class="nav-tab <?php echo $active_tab === $slug ? 'nav-tab-active' : ''; ?>">
             <?php echo esc_html( $label ); ?>
         </a>
@@ -226,7 +226,7 @@ $tabs = array(
 
     <div class="nxtrunn-filter-bar">
         <?php foreach ( $filters as $i => $f ) : ?>
-        <a href="?page=nxtrunn-settings&tab=outreach&outreach_filter=<?php echo $f; ?>"
+        <a href="?post_type=run_club&page=nxtrunn-settings&tab=outreach&outreach_filter=<?php echo $f; ?>"
            class="nxtrunn-filter-pill-admin <?php echo $filter === $f ? 'active' : ''; ?>">
             <?php echo $labels[ $i ]; ?>
         </a>

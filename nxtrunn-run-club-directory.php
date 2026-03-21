@@ -215,8 +215,24 @@ function nxtrunn_handle_pace_migration() {
             continue;
         }
 
+        // Skip clubs that already have pace meta from a previous migration
+        $existing_min = get_post_meta( $club_id, '_nxtrunn_pace_min', true );
+        if ( $existing_min && $existing_source === 'migration' ) {
+            $skipped++;
+            continue;
+        }
+
         $terms = wp_get_post_terms( $club_id, 'run_pace', array( 'fields' => 'names' ) );
+
+        // Clubs with no pace terms get default "All Paces" range
         if ( is_wp_error( $terms ) || empty( $terms ) ) {
+            if ( ! $existing_min ) {
+                update_post_meta( $club_id, '_nxtrunn_pace_min', 300 );
+                update_post_meta( $club_id, '_nxtrunn_pace_max', 1800 );
+                update_post_meta( $club_id, '_nxtrunn_walker_friendly', '1' );
+                update_post_meta( $club_id, '_nxtrunn_pace_source', 'migration' );
+                $migrated++;
+            }
             continue;
         }
 
