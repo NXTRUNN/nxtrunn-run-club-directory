@@ -9,6 +9,7 @@
         days: null,
         woman_owned: false,
         bipoc_owned: false,
+        verified: false,
         nearMe: false,
         userLat: null,
         userLng: null
@@ -56,8 +57,25 @@
             $(this).toggleClass('active');
             $(this).attr('aria-selected', currentFilters[badge] ? 'true' : 'false');
 
-            // Remove All active if a badge is active
-            if (currentFilters.woman_owned || currentFilters.bipoc_owned) {
+            // Remove All active if any filter is active
+            if (currentFilters.woman_owned || currentFilters.bipoc_owned || currentFilters.verified) {
+                allPill.removeClass('active').attr('aria-selected', 'false');
+            } else {
+                allPill.addClass('active').attr('aria-selected', 'true');
+            }
+
+            loadClubs();
+        });
+
+        // Verified filter
+        $('.nxtrunn-filter-pill[data-filter="verified"]').on('click', function() {
+            const allPill = $('.nxtrunn-filter-pill[data-filter="all"]');
+
+            currentFilters.verified = !currentFilters.verified;
+            $(this).toggleClass('active');
+            $(this).attr('aria-selected', currentFilters.verified ? 'true' : 'false');
+
+            if (currentFilters.woman_owned || currentFilters.bipoc_owned || currentFilters.verified) {
                 allPill.removeClass('active').attr('aria-selected', 'false');
             } else {
                 allPill.addClass('active').attr('aria-selected', 'true');
@@ -270,6 +288,9 @@
         if (currentFilters.pace_min) data.pace_min = currentFilters.pace_min;
         if (currentFilters.pace_max) data.pace_max = currentFilters.pace_max;
         if (currentFilters.walker_only) data.walker_only = currentFilters.walker_only;
+
+        // Verified filter
+        if (currentFilters.verified) data.verified = 1;
 
         return data;
     }
@@ -657,6 +678,7 @@
             days: null,
             woman_owned: false,
             bipoc_owned: false,
+            verified: false,
             nearMe: false,
             userLat: null,
             userLng: null
@@ -858,7 +880,7 @@
         closeModal('#nxtrunn-pace-modal');
 
         // Restore All Clubs if no other filters active
-        if (!currentFilters.woman_owned && !currentFilters.bipoc_owned && !currentFilters.nearMe) {
+        if (!currentFilters.woman_owned && !currentFilters.bipoc_owned && !currentFilters.verified && !currentFilters.nearMe) {
             $('.nxtrunn-filter-pill[data-filter="all"]').addClass('active').attr('aria-selected', 'true');
         }
 

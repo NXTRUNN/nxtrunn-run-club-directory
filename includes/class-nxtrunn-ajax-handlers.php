@@ -193,6 +193,15 @@ class NXTRUNN_AJAX_Handlers {
             );
         }
 
+        // Filter by verified/claimed clubs
+        if ( isset( $_POST['verified'] ) && $_POST['verified'] == '1' ) {
+            $meta_query[] = array(
+                'key'     => '_nxtrunn_claimed',
+                'value'   => '1',
+                'compare' => '=',
+            );
+        }
+
         // Filter by badges - ONLY if explicitly set to 1/true
         if ( isset( $_POST['woman_run'] ) && $_POST['woman_run'] == '1' ) {
             $meta_query[] = array(
