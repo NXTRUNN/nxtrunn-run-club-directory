@@ -68,8 +68,9 @@
     </div>
     <div class="flow-card">
       <h3>Admin Sends Outreach</h3>
-      <p>You click "Send Outreach" in WP Admin for a club that has an email on file. The branded HTML email goes out immediately.</p>
+      <p>From the Outreach &amp; Growth tab, add or edit a club&rsquo;s email inline, then click &ldquo;Save &amp; Send.&rdquo; The branded HTML email goes out immediately.</p>
       <span class="tag email">Email #1: Outreach</span>
+      <span class="tag fix">v1.6.1: Inline editing &mdash; no more editing individual posts</span>
     </div>
   </div>
 
@@ -133,9 +134,9 @@
     </div>
     <div class="flow-card">
       <h3>Verification Code Sent</h3>
-      <p>A 6-digit code is emailed to the club email they entered. Plain text email, expires in 1 hour. They enter the code in the modal.</p>
+      <p>A 6-digit code is emailed to the club email they entered. Branded HTML email matching the outreach style, expires in 1 hour. They enter the code in the modal.</p>
       <span class="tag email">Email #3: Verification code</span>
-      <span class="tag risk">Drop-off risk: code email is plain text (looks different from outreach), may go to spam</span>
+      <span class="tag fix">v1.6.1: Now branded HTML &mdash; matches outreach email style</span>
     </div>
   </div>
 
@@ -175,39 +176,45 @@
 <div class="analysis">
   <h2>Bottleneck Analysis</h2>
 
-  <div class="issue critical">
-    <h4>1. Verification Code Email is Plain Text</h4>
-    <p>The outreach email is a beautiful branded HTML email. But when they actually click "Claim" and enter their email, the verification code arrives as plain text with no branding. This inconsistency can make it look like a phishing attempt or spam. It also has no "From" name &mdash; it uses the default WordPress sender.</p>
-    <p class="fix-label">Fix: Make the verification code email branded HTML with the same look as outreach. Add From: NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</p>
+  <div class="issue" style="border-left: 3px solid #5E9070;">
+    <h4 style="color: #5E9070;">1. Verification Code Email is Plain Text &mdash; FIXED in v1.6.1</h4>
+    <p>Verification code email is now branded HTML matching the outreach style. From address set to NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;.</p>
+    <p class="fix-label">&#10003; Shipped</p>
   </div>
 
-  <div class="issue critical">
-    <h4>2. From Address Mismatch</h4>
-    <p>Outreach emails currently send from <strong>treb@nxtrunn.com</strong>. The verification code email sends from WordPress default (likely wordpress@nxtrunn.com or info@). The user created <strong>runclubs@nxtrunn.com</strong> for all directory mail. All 3 emails should use the same sender.</p>
-    <p class="fix-label">Fix: Set all emails to From: NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</p>
+  <div class="issue" style="border-left: 3px solid #5E9070;">
+    <h4 style="color: #5E9070;">2. From Address Mismatch &mdash; FIXED in v1.6.1</h4>
+    <p>All 3 emails (outreach, follow-up, verification code) now send from:<br><strong>NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</strong></p>
+    <p class="fix-label">&#10003; Shipped</p>
+  </div>
+
+  <div class="issue" style="border-left: 3px solid #5E9070;">
+    <h4 style="color: #5E9070;">3. Registration Wall Copy &mdash; FIXED in v1.6.1</h4>
+    <p>Updated "not logged in" messaging to: &ldquo;Create a free account to verify ownership &mdash; takes 30 seconds.&rdquo; Reduces perceived friction at the signup wall.</p>
+    <p class="fix-label">&#10003; Shipped</p>
+  </div>
+
+  <div class="issue" style="border-left: 3px solid #5E9070;">
+    <h4 style="color: #5E9070;">4. Outreach Email Workflow Friction &mdash; FIXED in v1.6.1</h4>
+    <p>Admins no longer need to edit individual club posts to add emails. The Outreach &amp; Growth tab now has inline email editing with Save, Save &amp; Send, and Resend buttons for each club.</p>
+    <p class="fix-label">&#10003; Shipped</p>
   </div>
 
   <div class="issue">
-    <h4>3. Registration Wall (Step 4)</h4>
-    <p>Club owners clicking "Claim Your Club" from the email are likely first-time visitors. If they're not logged in, they hit a MemberPress registration page. This is the biggest drop-off point &mdash; they came to claim a club, not create an account. The redirect back to the directory after signup relies on a cookie, which may not survive cross-domain or incognito browsing.</p>
-    <p class="fix-label">Consider: Add copy above "Sign Up to Claim" that says "Create a free account to verify your club (takes 30 seconds)"</p>
-  </div>
-
-  <div class="issue">
-    <h4>4. Two Separate Email Steps</h4>
-    <p>The user gets the outreach email, clicks through, signs up, then has to enter their club email AGAIN in the claim form, then check that inbox for a code. That's 2 email checks + a signup. Each handoff is a drop-off point.</p>
+    <h4>5. Two Separate Email Steps</h4>
+    <p>The user gets the outreach email, clicks through, signs up, then has to enter their club email AGAIN in the claim form, then check that inbox for a code. That&rsquo;s 2 email checks + a signup. Each handoff is a drop-off point.</p>
     <p class="fix-label">Consider: Pre-fill the club email in the claim form if the outreach email matches the contact email on file</p>
   </div>
 
   <div class="issue suggestion">
-    <h4>5. No "Claim" CTA on the Club Card Itself</h4>
-    <p>If someone lands on the directory (not via the email link), they have to: find their club &rarr; click it &rarr; scroll to the bottom of the modal &rarr; find "Claim This Club." There's no visual indicator on the card that it's unclaimed or claimable.</p>
+    <h4>6. No "Claim" CTA on the Club Card Itself</h4>
+    <p>If someone lands on the directory (not via the email link), they have to: find their club &rarr; click it &rarr; scroll to the bottom of the modal &rarr; find &ldquo;Claim This Club.&rdquo; There&rsquo;s no visual indicator on the card that it&rsquo;s unclaimed or claimable.</p>
     <p class="fix-label">Consider: Show a subtle "Claim" link or unclaimed indicator on cards for logged-in users</p>
   </div>
 
   <div class="issue suggestion">
-    <h4>6. No Confirmation Email After Successful Claim</h4>
-    <p>After verifying the code, the owner sees a success message in the modal &mdash; but gets no email confirmation. A "Welcome, you now own [Club Name]" email would reinforce the action and remind them to edit their listing.</p>
+    <h4>7. No Confirmation Email After Successful Claim</h4>
+    <p>After verifying the code, the owner sees a success message in the modal &mdash; but gets no email confirmation. A &ldquo;Welcome, you now own [Club Name]&rdquo; email would reinforce the action and remind them to edit their listing.</p>
     <p class="fix-label">Consider: Send a branded "You're verified!" confirmation email with a direct link to edit</p>
   </div>
 
@@ -299,38 +306,9 @@
 </div>
 
 <div class="email-section">
-  <h2>Email #3 &mdash; Verification Code (CURRENT: Plain Text)</h2>
+  <h2>Email #3 &mdash; Verification Code</h2>
   <div class="email-meta">
-    <strong>From:</strong> <span style="color: #C86848;">WordPress &lt;wordpress@nxtrunn.com&gt; (needs fix)</span><br>
-    <strong>Subject:</strong> <span>NXTRUNN &mdash; Verify Your Run Club: Brooklyn Road Runners</span><br>
-    <strong>Trigger:</strong> <span>User submits claim form with email + role</span>
-  </div>
-  <div class="email-preview">
-    <div style="font-family: monospace; color: #1C1720; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #F7F4F9;">
-      <div style="background: #fff; border-radius: 12px; padding: 32px 24px; white-space: pre-wrap; font-size: 14px; line-height: 1.8;">Hey!
-
-Someone is claiming ownership of Brooklyn Road Runners on the NXTRUNN Run Club Directory.
-
-Your verification code is:
-
-    <span style="font-size: 28px; font-weight: 700; letter-spacing: 4px; color: #7C5A78;">847291</span>
-
-Enter this code on NXTRUNN to verify your club.
-
-This code expires in 1 hour.
-
-If you didn't request this, you can ignore this email.
-
-&mdash; NXTRUNN
-Built for the Movement.</div>
-    </div>
-  </div>
-</div>
-
-<div class="email-section">
-  <h2>Email #3 &mdash; Verification Code (PROPOSED: Branded HTML)</h2>
-  <div class="email-meta">
-    <strong>From:</strong> <span style="color: #5E9070;">NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</span><br>
+    <strong>From:</strong> <span>NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</span><br>
     <strong>Subject:</strong> <span>Your verification code for Brooklyn Road Runners</span><br>
     <strong>Trigger:</strong> <span>User submits claim form with email + role</span>
   </div>
@@ -370,26 +348,43 @@ Built for the Movement.</div>
 <!-- ============================================ -->
 
 <div class="analysis">
-  <h2>Recommended Fixes (Priority Order)</h2>
+  <h2>Status &mdash; v1.6.1 Fixes Shipped</h2>
 
-  <div class="issue" style="border-left: 3px solid #C86848;">
-    <h4 style="color: #C86848;">1. Update From address on ALL emails to runclubs@nxtrunn.com</h4>
-    <p>Currently outreach sends from treb@nxtrunn.com, verification code uses WP default. All 3 should use:<br><strong>NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</strong></p>
+  <div class="issue" style="border-left: 3px solid #5E9070;">
+    <h4 style="color: #5E9070;">&#10003; From address unified to runclubs@nxtrunn.com</h4>
+    <p>All 3 emails (outreach, follow-up, verification) now send from <strong>NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</strong>.</p>
   </div>
 
-  <div class="issue" style="border-left: 3px solid #C86848;">
-    <h4 style="color: #C86848;">2. Upgrade verification code email to branded HTML</h4>
-    <p>Replace the plain text code email with the branded HTML version shown above. Same visual language as outreach = trust = higher completion rate.</p>
+  <div class="issue" style="border-left: 3px solid #5E9070;">
+    <h4 style="color: #5E9070;">&#10003; Verification code email upgraded to branded HTML</h4>
+    <p>Matches outreach visual style. Same fonts, layout, and CTA treatment. Builds trust through the full flow.</p>
   </div>
 
-  <div class="issue" style="border-left: 3px solid #C9903C;">
-    <h4 style="color: #C9903C;">3. Better "not logged in" copy in claim modal</h4>
-    <p>Change "Sign Up to Claim" messaging to be warmer: "Create a free account to verify ownership (takes 30 seconds)" &mdash; reduces perceived friction.</p>
+  <div class="issue" style="border-left: 3px solid #5E9070;">
+    <h4 style="color: #5E9070;">&#10003; Claim modal copy updated for non-logged-in users</h4>
+    <p>&ldquo;Create a free account to verify ownership &mdash; takes 30 seconds.&rdquo; Warmer, less friction.</p>
+  </div>
+
+  <div class="issue" style="border-left: 3px solid #5E9070;">
+    <h4 style="color: #5E9070;">&#10003; Inline outreach email editing on Outreach tab</h4>
+    <p>Add/edit email + Save, Save &amp; Send, and Resend buttons directly in the admin table. No more editing individual posts.</p>
+  </div>
+
+  <h2 style="margin-top: 32px;">Future Improvements</h2>
+
+  <div class="issue" style="border-left: 3px solid #4E6FA8;">
+    <h4 style="color: #4E6FA8;">Pre-fill club email in claim form</h4>
+    <p>If outreach email matches the contact email on file, auto-fill it in the claim form to skip one step.</p>
   </div>
 
   <div class="issue" style="border-left: 3px solid #4E6FA8;">
-    <h4 style="color: #4E6FA8;">4. Add post-claim confirmation email (future)</h4>
-    <p>After successful verification, send a "Welcome! You now own [Club Name]" email with a direct link back to edit their listing.</p>
+    <h4 style="color: #4E6FA8;">Post-claim confirmation email</h4>
+    <p>After successful verification, send a &ldquo;Welcome! You now own [Club Name]&rdquo; email with a direct link back to edit their listing.</p>
+  </div>
+
+  <div class="issue" style="border-left: 3px solid #4E6FA8;">
+    <h4 style="color: #4E6FA8;">Unclaimed indicator on club cards</h4>
+    <p>Show a subtle &ldquo;Claim&rdquo; link or unclaimed badge on directory cards for logged-in users.</p>
   </div>
 
 </div>

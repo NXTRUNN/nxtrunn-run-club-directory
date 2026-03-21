@@ -231,6 +231,35 @@ function nxtrunn_handle_resend_outreach() {
 }
 
 /**
+ * AJAX: Unclaim a club — admin only, puts club back in the queue
+ */
+add_action( 'wp_ajax_nxtrunn_unclaim_club', 'nxtrunn_handle_unclaim_club' );
+function nxtrunn_handle_unclaim_club() {
+    if ( ! wp_verify_nonce( $_POST['nonce'] ?? '', 'nxtrunn_outreach_nonce' ) ) {
+        wp_die( 'Security check failed' );
+    }
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Admins only.' );
+    }
+
+    $post_id = absint( $_POST['post_id'] ?? 0 );
+    if ( ! $post_id || get_post_type( $post_id ) !== 'run_club' ) {
+        wp_send_json_error( 'Invalid club.' );
+    }
+
+    // Clear all claim meta — club content/edits are preserved
+    delete_post_meta( $post_id, '_nxtrunn_claimed' );
+    delete_post_meta( $post_id, '_nxtrunn_claimed_by' );
+    delete_post_meta( $post_id, '_nxtrunn_claimed_date' );
+    delete_post_meta( $post_id, '_nxtrunn_owner_email' );
+    delete_post_meta( $post_id, '_nxtrunn_owner_role' );
+    delete_post_meta( $post_id, '_nxtrunn_claim_source' );
+    delete_post_meta( $post_id, '_nxtrunn_claim_initiated' );
+
+    wp_send_json_success( 'Club unclaimed — back in the queue.' );
+}
+
+/**
  * AJAX: Migrate pace data from taxonomy terms to meta fields
  * Maps run_pace taxonomy terms to _nxtrunn_pace_min / _nxtrunn_pace_max meta
  */

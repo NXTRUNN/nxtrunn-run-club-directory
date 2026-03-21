@@ -276,7 +276,8 @@ $tabs = array(
             </td>
             <td class="nxtrunn-outreach-actions">
                 <?php if ( $is_claimed ) : ?>
-                    <span style="color:#5E9070; font-size:12px;">Claimed</span>
+                    <button type="button" class="button button-small nxtrunn-outreach-unclaim" style="color:#C86848; border-color:#C86848;">Unclaim</button>
+                    <span class="nxtrunn-outreach-msg" style="font-size:11px; margin-left:4px;"></span>
                 <?php elseif ( $o_sent ) : ?>
                     <button type="button" class="button button-small nxtrunn-outreach-resend">Resend</button>
                     <span class="nxtrunn-outreach-msg" style="font-size:11px; margin-left:4px;"></span>
@@ -361,6 +362,43 @@ $tabs = array(
                 }
             }).fail(function() {
                 $btn.prop('disabled', false).text('Save & Send');
+                $msg.css('color', '#C86848').text('Failed');
+            });
+        });
+
+        // Unclaim a club — puts it back in the queue
+        $(document).on('click', '.nxtrunn-outreach-unclaim', function() {
+            if (!confirm('Unclaim this club? The owner will lose edit access and the club goes back in the queue.')) return;
+
+            var $row = $(this).closest('tr');
+            var clubId = $row.data('club-id');
+            var $msg = $row.find('.nxtrunn-outreach-msg');
+            var $btn = $(this);
+
+            $btn.prop('disabled', true).text('Unclaiming...');
+
+            $.post(ajaxurl, {
+                action: 'nxtrunn_unclaim_club',
+                nonce: nonce,
+                post_id: clubId
+            }, function(resp) {
+                if (resp.success) {
+                    $msg.css('color', '#C9903C').text('Unclaimed!');
+                    $row.find('.nxtrunn-outreach-status').css('color', '#C9903C').text('Sent');
+                    $row.find('.nxtrunn-outreach-email-input').prop('disabled', false);
+                    // Replace Unclaim button with Resend
+                    $btn.remove();
+                    $row.find('.nxtrunn-outreach-actions').prepend(
+                        '<button type="button" class="button button-small nxtrunn-outreach-resend">Resend</button> '
+                    );
+                    // Update Claimed column
+                    $row.find('td:eq(5)').html('&mdash;');
+                } else {
+                    $btn.prop('disabled', false).text('Unclaim');
+                    $msg.css('color', '#C86848').text(resp.data || 'Error');
+                }
+            }).fail(function() {
+                $btn.prop('disabled', false).text('Unclaim');
                 $msg.css('color', '#C86848').text('Failed');
             });
         });
