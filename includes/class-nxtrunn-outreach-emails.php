@@ -15,7 +15,7 @@ class NXTRUNN_Outreach_Emails {
         $html    = self::render_outreach_template( $club_name, $claim_url );
         $headers = array(
             'Content-Type: text/html; charset=UTF-8',
-            'From: Treb at NXTRUNN <treb@nxtrunn.com>',
+            'From: NXTRUNN Run Clubs <runclubs@nxtrunn.com>',
         );
 
         wp_mail( $email, $subject, $html, $headers );
@@ -40,7 +40,7 @@ class NXTRUNN_Outreach_Emails {
         $html    = self::render_followup_template( $club_name, $claim_url );
         $headers = array(
             'Content-Type: text/html; charset=UTF-8',
-            'From: Treb at NXTRUNN <treb@nxtrunn.com>',
+            'From: NXTRUNN Run Clubs <runclubs@nxtrunn.com>',
         );
 
         wp_mail( $email, $subject, $html, $headers );

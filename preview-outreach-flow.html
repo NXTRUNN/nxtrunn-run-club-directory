@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NXTRUNN — Outreach Email Flow Preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', 'Segoe UI', Arial, sans-serif; background: #1C1720; color: #F7F4F9; padding: 32px 16px; }
+
+  h1 { font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 28px; text-align: center; margin-bottom: 8px; color: #fff; }
+  .subtitle { text-align: center; color: #A07E9C; font-size: 14px; margin-bottom: 48px; }
+
+  /* Flow diagram */
+  .flow { max-width: 700px; margin: 0 auto 64px; }
+  .flow-step { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 0; }
+  .flow-line { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 40px; }
+  .flow-dot { width: 32px; height: 32px; border-radius: 50%; background: #7C5A78; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #fff; flex-shrink: 0; }
+  .flow-dot.warning { background: #C9903C; }
+  .flow-dot.danger { background: #C86848; }
+  .flow-dot.success { background: #5E9070; }
+  .flow-connector { width: 2px; height: 40px; background: #3d2f42; }
+  .flow-card { background: #2a2230; border: 1px solid #3d2f42; border-radius: 12px; padding: 16px 20px; flex: 1; margin-bottom: 16px; }
+  .flow-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; color: #fff; }
+  .flow-card p { font-size: 13px; color: #A07E9C; line-height: 1.5; }
+  .flow-card .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 9999px; margin-top: 8px; font-weight: 600; }
+  .tag.email { background: rgba(78, 111, 168, 0.2); color: #7da0d4; }
+  .tag.action { background: rgba(124, 90, 120, 0.2); color: #c49abe; }
+  .tag.risk { background: rgba(200, 104, 72, 0.2); color: #e8a080; }
+  .tag.fix { background: rgba(94, 144, 112, 0.2); color: #8dc4a0; }
+
+  /* Analysis section */
+  .analysis { max-width: 700px; margin: 0 auto 64px; }
+  .analysis h2 { font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 22px; margin-bottom: 20px; color: #fff; border-bottom: 1px solid #3d2f42; padding-bottom: 8px; }
+  .issue { background: #2a2230; border: 1px solid #3d2f42; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .issue h4 { font-size: 14px; color: #C9903C; margin-bottom: 6px; }
+  .issue.critical h4 { color: #C86848; }
+  .issue.suggestion h4 { color: #4E6FA8; }
+  .issue p { font-size: 13px; color: #B5A8BA; line-height: 1.6; }
+  .issue .fix-label { font-size: 12px; color: #5E9070; font-weight: 600; margin-top: 8px; }
+
+  /* Email previews */
+  .email-section { max-width: 640px; margin: 0 auto 48px; }
+  .email-section h2 { font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 22px; margin-bottom: 8px; color: #fff; }
+  .email-meta { font-size: 12px; color: #6D6070; margin-bottom: 16px; padding: 12px 16px; background: #2a2230; border-radius: 8px; border: 1px solid #3d2f42; }
+  .email-meta span { color: #A07E9C; }
+  .email-preview { border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+
+  .divider { height: 1px; background: #3d2f42; max-width: 700px; margin: 48px auto; }
+</style>
+</head>
+<body>
+
+<h1>NXTRUNN Run Club Outreach Flow</h1>
+<p class="subtitle">Email journey + claim process &mdash; end-to-end breakdown</p>
+
+<!-- ============================================ -->
+<!-- FLOW DIAGRAM -->
+<!-- ============================================ -->
+
+<div class="flow">
+
+  <!-- Step 1 -->
+  <div class="flow-step">
+    <div class="flow-line">
+      <div class="flow-dot">1</div>
+      <div class="flow-connector"></div>
+    </div>
+    <div class="flow-card">
+      <h3>Admin Sends Outreach</h3>
+      <p>You click "Send Outreach" in WP Admin for a club that has an email on file. The branded HTML email goes out immediately.</p>
+      <span class="tag email">Email #1: Outreach</span>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="flow-step">
+    <div class="flow-line">
+      <div class="flow-dot warning">2</div>
+      <div class="flow-connector"></div>
+    </div>
+    <div class="flow-card">
+      <h3>Club Owner Opens Email</h3>
+      <p>They see a personal email from "NXTRUNN Run Clubs" with their club name in the greeting. One big CTA: "Claim Your Club."</p>
+      <span class="tag risk">Drop-off risk: email lands in spam/promotions</span>
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="flow-step">
+    <div class="flow-line">
+      <div class="flow-dot">3</div>
+      <div class="flow-connector"></div>
+    </div>
+    <div class="flow-card">
+      <h3>Clicks "Claim Your Club"</h3>
+      <p>Link goes to the directory page with <code>?open_claim=123</code>. The club modal auto-opens after 800ms.</p>
+      <span class="tag action">Lands on: Directory page &rarr; Club modal</span>
+    </div>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="flow-step">
+    <div class="flow-line">
+      <div class="flow-dot warning">4</div>
+      <div class="flow-connector"></div>
+    </div>
+    <div class="flow-card">
+      <h3>Not Logged In &mdash; Sign Up Wall</h3>
+      <p>If not logged in, they see "Sign Up to Claim" which links to MemberPress registration. A cookie saves their club ID so they can resume after signup.</p>
+      <span class="tag risk">Drop-off risk: registration friction (name, email, password)</span>
+    </div>
+  </div>
+
+  <!-- Step 5 -->
+  <div class="flow-step">
+    <div class="flow-line">
+      <div class="flow-dot">5</div>
+      <div class="flow-connector"></div>
+    </div>
+    <div class="flow-card">
+      <h3>Logged In &mdash; Claim Form</h3>
+      <p>They see "Claim This Club" button inside the modal. Clicking opens the inline form: select role (Founder/Captain/Admin/Ambassador) + enter club contact email.</p>
+      <span class="tag action">2 fields: Role dropdown + Email</span>
+    </div>
+  </div>
+
+  <!-- Step 6 -->
+  <div class="flow-step">
+    <div class="flow-line">
+      <div class="flow-dot warning">6</div>
+      <div class="flow-connector"></div>
+    </div>
+    <div class="flow-card">
+      <h3>Verification Code Sent</h3>
+      <p>A 6-digit code is emailed to the club email they entered. Plain text email, expires in 1 hour. They enter the code in the modal.</p>
+      <span class="tag email">Email #3: Verification code</span>
+      <span class="tag risk">Drop-off risk: code email is plain text (looks different from outreach), may go to spam</span>
+    </div>
+  </div>
+
+  <!-- Step 7 -->
+  <div class="flow-step">
+    <div class="flow-line">
+      <div class="flow-dot success">7</div>
+      <div class="flow-connector"></div>
+    </div>
+    <div class="flow-card">
+      <h3>Club Verified!</h3>
+      <p>Code matches &rarr; auto-approved. Club is now marked as claimed. Owner can edit description, location, socials, and upload a logo.</p>
+      <span class="tag fix">Conversion complete</span>
+    </div>
+  </div>
+
+  <!-- Step 8 (follow-up) -->
+  <div class="flow-step">
+    <div class="flow-line">
+      <div class="flow-dot" style="background:#4E6FA8;">F</div>
+    </div>
+    <div class="flow-card">
+      <h3>Day 7: Follow-Up Email (if unclaimed)</h3>
+      <p>WP-Cron fires 7 days after outreach. If the club hasn't been claimed, a shorter follow-up email goes out with their club name in the CTA button.</p>
+      <span class="tag email">Email #2: Follow-up</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================ -->
+<!-- BOTTLENECK ANALYSIS -->
+<!-- ============================================ -->
+
+<div class="analysis">
+  <h2>Bottleneck Analysis</h2>
+
+  <div class="issue critical">
+    <h4>1. Verification Code Email is Plain Text</h4>
+    <p>The outreach email is a beautiful branded HTML email. But when they actually click "Claim" and enter their email, the verification code arrives as plain text with no branding. This inconsistency can make it look like a phishing attempt or spam. It also has no "From" name &mdash; it uses the default WordPress sender.</p>
+    <p class="fix-label">Fix: Make the verification code email branded HTML with the same look as outreach. Add From: NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</p>
+  </div>
+
+  <div class="issue critical">
+    <h4>2. From Address Mismatch</h4>
+    <p>Outreach emails currently send from <strong>treb@nxtrunn.com</strong>. The verification code email sends from WordPress default (likely wordpress@nxtrunn.com or info@). The user created <strong>runclubs@nxtrunn.com</strong> for all directory mail. All 3 emails should use the same sender.</p>
+    <p class="fix-label">Fix: Set all emails to From: NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</p>
+  </div>
+
+  <div class="issue">
+    <h4>3. Registration Wall (Step 4)</h4>
+    <p>Club owners clicking "Claim Your Club" from the email are likely first-time visitors. If they're not logged in, they hit a MemberPress registration page. This is the biggest drop-off point &mdash; they came to claim a club, not create an account. The redirect back to the directory after signup relies on a cookie, which may not survive cross-domain or incognito browsing.</p>
+    <p class="fix-label">Consider: Add copy above "Sign Up to Claim" that says "Create a free account to verify your club (takes 30 seconds)"</p>
+  </div>
+
+  <div class="issue">
+    <h4>4. Two Separate Email Steps</h4>
+    <p>The user gets the outreach email, clicks through, signs up, then has to enter their club email AGAIN in the claim form, then check that inbox for a code. That's 2 email checks + a signup. Each handoff is a drop-off point.</p>
+    <p class="fix-label">Consider: Pre-fill the club email in the claim form if the outreach email matches the contact email on file</p>
+  </div>
+
+  <div class="issue suggestion">
+    <h4>5. No "Claim" CTA on the Club Card Itself</h4>
+    <p>If someone lands on the directory (not via the email link), they have to: find their club &rarr; click it &rarr; scroll to the bottom of the modal &rarr; find "Claim This Club." There's no visual indicator on the card that it's unclaimed or claimable.</p>
+    <p class="fix-label">Consider: Show a subtle "Claim" link or unclaimed indicator on cards for logged-in users</p>
+  </div>
+
+  <div class="issue suggestion">
+    <h4>6. No Confirmation Email After Successful Claim</h4>
+    <p>After verifying the code, the owner sees a success message in the modal &mdash; but gets no email confirmation. A "Welcome, you now own [Club Name]" email would reinforce the action and remind them to edit their listing.</p>
+    <p class="fix-label">Consider: Send a branded "You're verified!" confirmation email with a direct link to edit</p>
+  </div>
+
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================ -->
+<!-- EMAIL PREVIEWS -->
+<!-- ============================================ -->
+
+<div class="email-section">
+  <h2>Email #1 &mdash; First Outreach</h2>
+  <div class="email-meta">
+    <strong>From:</strong> <span>NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</span><br>
+    <strong>Subject:</strong> <span>Your run club is on NXTRUNN</span><br>
+    <strong>Trigger:</strong> <span>Admin clicks "Send Outreach" in WP Admin</span>
+  </div>
+  <div class="email-preview">
+    <!-- Actual email HTML -->
+    <div style="font-family: 'DM Sans', Arial, sans-serif; color: #1C1720; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #F7F4F9;">
+      <div style="background: #fff; border-radius: 12px; padding: 32px 24px;">
+
+        <p style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Hey Brooklyn Road Runners fam,</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">I found your club while building something I wish existed when I started running &mdash; and I had to reach out.</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">My name is Treb. I built <strong>NXTRUNN</strong> because run clubs, especially ones led by Black, Brown, and women runners, deserve more visibility. Not just a hashtag &mdash; a real home where people can find you, follow your journey, and show up to your runs.</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;"><strong>Your club is already listed. But I want YOU to own it.</strong></p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">Claiming your listing takes 2 minutes. Once you do, you can update your description, add your meeting spot, link your socials, and make sure the right runners find you.</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">It&rsquo;s free. Always will be.</p>
+
+        <p style="margin: 32px 0; text-align: center;">
+          <a href="#" style="display: inline-block; background: #1C1720; color: #fff; padding: 14px 28px; border-radius: 9999px; text-decoration: none; font-weight: 600; font-size: 15px;">
+            Claim Your Club &rarr;
+          </a>
+        </p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">Let&rsquo;s build this community together.</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">&mdash; Treb<br>Founder, NXTRUNN</p>
+
+        <p style="font-size: 13px; color: #6D6070; margin-top: 32px; border-top: 1px solid #E2DAE8; padding-top: 16px; line-height: 1.5;">
+          P.S. If this isn&rsquo;t the right contact for your club, feel free to forward it to whoever runs things. We want the right people in the room.
+        </p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="email-section">
+  <h2>Email #2 &mdash; Day 7 Follow-Up</h2>
+  <div class="email-meta">
+    <strong>From:</strong> <span>NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</span><br>
+    <strong>Subject:</strong> <span>Just checking in - Brooklyn Road Runners on NXTRUNN</span><br>
+    <strong>Trigger:</strong> <span>WP-Cron, 7 days after outreach (if unclaimed)</span>
+  </div>
+  <div class="email-preview">
+    <div style="font-family: 'DM Sans', Arial, sans-serif; color: #1C1720; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #F7F4F9;">
+      <div style="background: #fff; border-radius: 12px; padding: 32px 24px;">
+
+        <p style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Hey Brooklyn Road Runners,</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">Just wanted to make sure my last email didn&rsquo;t get buried in the inbox.</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">Your listing on NXTRUNN is live &mdash; runners are already searching for clubs like yours. I just want to make sure the right person is behind it.</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">Claiming takes 2 minutes and it&rsquo;s completely free. Once you do, you control everything &mdash; your description, your meeting spot, your socials, your logo.</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">No account? No problem. The claim flow walks you through a quick setup and gets you in.</p>
+
+        <p style="margin: 32px 0; text-align: center;">
+          <a href="#" style="display: inline-block; background: #1C1720; color: #fff; padding: 14px 28px; border-radius: 9999px; text-decoration: none; font-weight: 600; font-size: 15px;">
+            Claim Brooklyn Road Runners &rarr;
+          </a>
+        </p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">If now&rsquo;s not the right time, no worries at all. Your listing stays up either way &mdash; I just want the community to hear from you directly.</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">&mdash; Treb<br>Founder, NXTRUNN</p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="email-section">
+  <h2>Email #3 &mdash; Verification Code (CURRENT: Plain Text)</h2>
+  <div class="email-meta">
+    <strong>From:</strong> <span style="color: #C86848;">WordPress &lt;wordpress@nxtrunn.com&gt; (needs fix)</span><br>
+    <strong>Subject:</strong> <span>NXTRUNN &mdash; Verify Your Run Club: Brooklyn Road Runners</span><br>
+    <strong>Trigger:</strong> <span>User submits claim form with email + role</span>
+  </div>
+  <div class="email-preview">
+    <div style="font-family: monospace; color: #1C1720; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #F7F4F9;">
+      <div style="background: #fff; border-radius: 12px; padding: 32px 24px; white-space: pre-wrap; font-size: 14px; line-height: 1.8;">Hey!
+
+Someone is claiming ownership of Brooklyn Road Runners on the NXTRUNN Run Club Directory.
+
+Your verification code is:
+
+    <span style="font-size: 28px; font-weight: 700; letter-spacing: 4px; color: #7C5A78;">847291</span>
+
+Enter this code on NXTRUNN to verify your club.
+
+This code expires in 1 hour.
+
+If you didn't request this, you can ignore this email.
+
+&mdash; NXTRUNN
+Built for the Movement.</div>
+    </div>
+  </div>
+</div>
+
+<div class="email-section">
+  <h2>Email #3 &mdash; Verification Code (PROPOSED: Branded HTML)</h2>
+  <div class="email-meta">
+    <strong>From:</strong> <span style="color: #5E9070;">NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</span><br>
+    <strong>Subject:</strong> <span>Your verification code for Brooklyn Road Runners</span><br>
+    <strong>Trigger:</strong> <span>User submits claim form with email + role</span>
+  </div>
+  <div class="email-preview">
+    <div style="font-family: 'DM Sans', Arial, sans-serif; color: #1C1720; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #F7F4F9;">
+      <div style="background: #fff; border-radius: 12px; padding: 32px 24px;">
+
+        <p style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Verify Your Club</p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">Someone is claiming ownership of <strong>Brooklyn Road Runners</strong> on NXTRUNN. If that&rsquo;s you, enter this code to complete verification:</p>
+
+        <div style="text-align: center; margin: 32px 0;">
+          <div style="display: inline-block; background: #F7F4F9; border: 2px solid #E2DAE8; border-radius: 12px; padding: 20px 40px;">
+            <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #7C5A78; font-family: 'Barlow Condensed', monospace;">847291</span>
+          </div>
+        </div>
+
+        <p style="margin: 12px 0; line-height: 1.6; text-align: center; font-size: 13px; color: #6D6070;">This code expires in <strong>1 hour</strong>.</p>
+
+        <p style="margin: 24px 0; line-height: 1.6;">Once verified, you&rsquo;ll be able to edit your club&rsquo;s description, meeting location, socials, and logo.</p>
+
+        <p style="font-size: 13px; color: #6D6070; margin-top: 32px; border-top: 1px solid #E2DAE8; padding-top: 16px; line-height: 1.5;">
+          If you didn&rsquo;t request this, you can safely ignore this email. No changes will be made to your listing.
+        </p>
+
+        <p style="margin: 12px 0; line-height: 1.6;">&mdash; NXTRUNN<br><span style="font-size: 13px; color: #6D6070;">Built for the Movement.</span></p>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ============================================ -->
+<!-- RECOMMENDATIONS -->
+<!-- ============================================ -->
+
+<div class="analysis">
+  <h2>Recommended Fixes (Priority Order)</h2>
+
+  <div class="issue" style="border-left: 3px solid #C86848;">
+    <h4 style="color: #C86848;">1. Update From address on ALL emails to runclubs@nxtrunn.com</h4>
+    <p>Currently outreach sends from treb@nxtrunn.com, verification code uses WP default. All 3 should use:<br><strong>NXTRUNN Run Clubs &lt;runclubs@nxtrunn.com&gt;</strong></p>
+  </div>
+
+  <div class="issue" style="border-left: 3px solid #C86848;">
+    <h4 style="color: #C86848;">2. Upgrade verification code email to branded HTML</h4>
+    <p>Replace the plain text code email with the branded HTML version shown above. Same visual language as outreach = trust = higher completion rate.</p>
+  </div>
+
+  <div class="issue" style="border-left: 3px solid #C9903C;">
+    <h4 style="color: #C9903C;">3. Better "not logged in" copy in claim modal</h4>
+    <p>Change "Sign Up to Claim" messaging to be warmer: "Create a free account to verify ownership (takes 30 seconds)" &mdash; reduces perceived friction.</p>
+  </div>
+
+  <div class="issue" style="border-left: 3px solid #4E6FA8;">
+    <h4 style="color: #4E6FA8;">4. Add post-claim confirmation email (future)</h4>
+    <p>After successful verification, send a "Welcome! You now own [Club Name]" email with a direct link back to edit their listing.</p>
+  </div>
+
+</div>
+
+<p style="text-align: center; color: #6D6070; font-size: 12px; padding: 32px 0;">
+  NXTRUNN Run Club Directory &mdash; Outreach Flow Preview &mdash; March 2026
+</p>
+
+</body>
+</html>

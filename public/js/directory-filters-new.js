@@ -645,8 +645,8 @@
                 html += '<div id="nxtrunn-claim-form-container"></div>';
             } else {
                 html += '<div class="nxtrunn-claim-signup">';
-                html += '<p>Is this your club? Claim it to manage your listing.</p>';
-                html += '<a href="' + nxtrunn_ajax.register_url + '" onclick="document.cookie=\'nxtrunn_claim_club=' + club.id + ';path=/;max-age=3600\';">Sign Up to Claim</a>';
+                html += '<p>Is this your club? Create a free account to verify ownership &mdash; takes 30 seconds.</p>';
+                html += '<a href="' + escapeAttr(nxtrunn_ajax.register_url) + '" onclick="document.cookie=\'nxtrunn_claim_club=' + parseInt(club.id) + ';path=/;max-age=3600\';">Sign Up to Claim</a>';
                 html += '</div>';
             }
 

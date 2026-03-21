@@ -74,23 +74,42 @@ class NXTRUNN_Claims {
 
         // Send verification email to club email
         $club_name = $club->post_title;
-        $subject = 'NXTRUNN — Verify Your Run Club: ' . $club_name;
+        $safe_name = esc_html( $club_name );
+        $subject = 'Your verification code for ' . $club_name;
 
-        $message = sprintf(
-            "Hey!\n\n" .
-            "Someone is claiming ownership of %s on the NXTRUNN Run Club Directory.\n\n" .
-            "Your verification code is:\n\n" .
-            "    %s\n\n" .
-            "Enter this code on NXTRUNN to verify your club.\n\n" .
-            "This code expires in 1 hour.\n\n" .
-            "If you didn't request this, you can ignore this email.\n\n" .
-            "— NXTRUNN\n" .
-            "Built for the Movement.",
-            $club_name,
-            $code
+        $message = '<!DOCTYPE html>
+<html>
+<body style="font-family: \'DM Sans\', Arial, sans-serif; color: #1C1720; max-width: 600px; margin: 0 auto; padding: 32px 24px; background: #F7F4F9;">
+  <div style="background: #fff; border-radius: 12px; padding: 32px 24px;">
+
+  <p style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Verify Your Club</p>
+
+  <p style="margin: 12px 0; line-height: 1.6;">Someone is claiming ownership of <strong>' . $safe_name . '</strong> on NXTRUNN. If that&rsquo;s you, enter this code to complete verification:</p>
+
+  <div style="text-align: center; margin: 32px 0;">
+    <div style="display: inline-block; background: #F7F4F9; border: 2px solid #E2DAE8; border-radius: 12px; padding: 20px 40px;">
+      <span style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #7C5A78; font-family: monospace;">' . esc_html( $code ) . '</span>
+    </div>
+  </div>
+
+  <p style="margin: 12px 0; line-height: 1.6; text-align: center; font-size: 13px; color: #6D6070;">This code expires in <strong>1 hour</strong>.</p>
+
+  <p style="margin: 24px 0; line-height: 1.6;">Once verified, you&rsquo;ll be able to edit your club&rsquo;s description, meeting location, socials, and logo.</p>
+
+  <p style="font-size: 13px; color: #6D6070; margin-top: 32px; border-top: 1px solid #E2DAE8; padding-top: 16px; line-height: 1.5;">
+    If you didn&rsquo;t request this, you can safely ignore this email. No changes will be made to your listing.
+  </p>
+
+  <p style="margin: 12px 0; line-height: 1.6;">&mdash; NXTRUNN<br><span style="font-size: 13px; color: #6D6070;">Built for the Movement.</span></p>
+
+  </div>
+</body>
+</html>';
+
+        $headers = array(
+            'Content-Type: text/html; charset=UTF-8',
+            'From: NXTRUNN Run Clubs <runclubs@nxtrunn.com>',
         );
-
-        $headers = array( 'Content-Type: text/plain; charset=UTF-8' );
         $sent = wp_mail( $club_email, $subject, $message, $headers );
 
         if ( ! $sent ) {
