@@ -215,64 +215,76 @@ function nxtrunn_handle_pace_migration() {
             continue;
         }
 
-        // Skip clubs that already have pace meta from a previous migration
-        $existing_min = get_post_meta( $club_id, '_nxtrunn_pace_min', true );
-        if ( $existing_min && $existing_source === 'migration' ) {
-            $skipped++;
-            continue;
-        }
+        // Re-migrate clubs with source='migration' (allows re-running with updated logic)
+        // Only skip owner-set clubs (handled above)
 
-        $terms = wp_get_post_terms( $club_id, 'run_pace', array( 'fields' => 'names' ) );
+        // Gather signals from BOTH taxonomies
+        $pace_terms = wp_get_post_terms( $club_id, 'run_pace', array( 'fields' => 'names' ) );
+        $vibe_terms = wp_get_post_terms( $club_id, 'run_vibe', array( 'fields' => 'names' ) );
 
-        // Clubs with no pace terms get default "All Paces" range
-        if ( is_wp_error( $terms ) || empty( $terms ) ) {
-            if ( ! $existing_min ) {
-                update_post_meta( $club_id, '_nxtrunn_pace_min', 300 );
-                update_post_meta( $club_id, '_nxtrunn_pace_max', 1800 );
-                update_post_meta( $club_id, '_nxtrunn_walker_friendly', '1' );
-                update_post_meta( $club_id, '_nxtrunn_pace_source', 'migration' );
-                $migrated++;
-            }
-            continue;
-        }
+        $pace_names = ( ! is_wp_error( $pace_terms ) ) ? $pace_terms : array();
+        $vibe_names = ( ! is_wp_error( $vibe_terms ) ) ? $vibe_terms : array();
 
-        // Use the most specific term (Fast > Moderate > Casual > All Paces)
-        $best = null;
-        $priority = array( 'Fast (<9 min/mile)' => 4, 'Moderate (9-12 min/mile)' => 3, 'Casual (12+ min/mile)' => 2, 'All Paces' => 1 );
+        // Default: All Paces (widest range)
+        $final_min = 300;   // 5:00/mi
+        $final_max = 1800;  // 30:00/mi
+        $walker = '1';
+        $matched = false;
 
-        foreach ( $terms as $term_name ) {
+        // 1) Check run_pace taxonomy first (most explicit signal)
+        $matched_pace = array();
+        foreach ( $pace_names as $term_name ) {
             if ( isset( $pace_map[ $term_name ] ) ) {
-                $p = $priority[ $term_name ] ?? 0;
-                if ( $best === null || $p > $priority[ $best ] ) {
-                    $best = $term_name;
-                }
+                $matched_pace[] = $pace_map[ $term_name ];
             }
         }
 
-        // If multiple terms, widen the range (e.g., Casual + Moderate = 540-1800)
-        if ( count( $terms ) > 1 ) {
-            $min_val = 1800;
-            $max_val = 300;
-            $has_walker = false;
-            foreach ( $terms as $term_name ) {
-                if ( isset( $pace_map[ $term_name ] ) ) {
-                    $min_val = min( $min_val, $pace_map[ $term_name ]['min'] );
-                    $max_val = max( $max_val, $pace_map[ $term_name ]['max'] );
-                    if ( $pace_map[ $term_name ]['walker'] === '1' ) $has_walker = true;
-                }
+        if ( ! empty( $matched_pace ) ) {
+            // Widen across all matched pace terms
+            $final_min = 1800;
+            $final_max = 300;
+            $walker = '0';
+            foreach ( $matched_pace as $p ) {
+                $final_min = min( $final_min, $p['min'] );
+                $final_max = max( $final_max, $p['max'] );
+                if ( $p['walker'] === '1' ) $walker = '1';
             }
-            update_post_meta( $club_id, '_nxtrunn_pace_min', $min_val );
-            update_post_meta( $club_id, '_nxtrunn_pace_max', $max_val );
-            update_post_meta( $club_id, '_nxtrunn_walker_friendly', $has_walker ? '1' : '0' );
-            update_post_meta( $club_id, '_nxtrunn_pace_source', 'migration' );
-            $migrated++;
-        } elseif ( $best && isset( $pace_map[ $best ] ) ) {
-            update_post_meta( $club_id, '_nxtrunn_pace_min', $pace_map[ $best ]['min'] );
-            update_post_meta( $club_id, '_nxtrunn_pace_max', $pace_map[ $best ]['max'] );
-            update_post_meta( $club_id, '_nxtrunn_walker_friendly', $pace_map[ $best ]['walker'] );
-            update_post_meta( $club_id, '_nxtrunn_pace_source', 'migration' );
-            $migrated++;
+            $matched = true;
         }
+
+        // 2) Check run_vibe taxonomy (Daily.nyc tags stored here)
+        //    Beginner-Friendly → casual-to-slow (9:00 – 30:00, walker-friendly)
+        //    Competitive       → fast (5:00 – 8:00, no walker)
+        //    Both              → full range (5:00 – 30:00)
+        if ( ! $matched ) {
+            $has_beginner    = in_array( 'Beginner-Friendly', $vibe_names );
+            $has_competitive = in_array( 'Competitive', $vibe_names );
+
+            if ( $has_beginner && $has_competitive ) {
+                $final_min = 300;   // 5:00/mi — they welcome everyone
+                $final_max = 1800;  // 30:00/mi
+                $walker = '1';
+                $matched = true;
+            } elseif ( $has_competitive ) {
+                $final_min = 300;   // 5:00/mi
+                $final_max = 480;   // 8:00/mi
+                $walker = '0';
+                $matched = true;
+            } elseif ( $has_beginner ) {
+                $final_min = 540;   // 9:00/mi
+                $final_max = 1800;  // 30:00/mi
+                $walker = '1';
+                $matched = true;
+            }
+        }
+
+        // 3) No tags at all — keeps default All Paces (300-1800)
+
+        update_post_meta( $club_id, '_nxtrunn_pace_min', $final_min );
+        update_post_meta( $club_id, '_nxtrunn_pace_max', $final_max );
+        update_post_meta( $club_id, '_nxtrunn_walker_friendly', $walker );
+        update_post_meta( $club_id, '_nxtrunn_pace_source', 'migration' );
+        $migrated++;
     }
 
     wp_send_json_success( array(

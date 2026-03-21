@@ -59,7 +59,7 @@ $tabs = array(
     <hr>
 
     <h2>Pace Data Migration</h2>
-    <p>Assign pace ranges (min/max seconds) to clubs based on their existing pace taxonomy terms. Clubs already updated by owners will be skipped.</p>
+    <p>Assign pace ranges to clubs based on their tags. <strong>Beginner-Friendly</strong> → 9:00–30:00/mi, <strong>Competitive</strong> → 5:00–8:00/mi, <strong>No tags</strong> → All Paces. Owner-set clubs are skipped. Safe to re-run.</p>
     <button type="button" class="button button-secondary" id="nxtrunn-migrate-pace">Run Pace Migration</button>
     <span id="nxtrunn-pace-migrate-result" style="margin-left: 12px; font-weight: 600;"></span>
     <script>
